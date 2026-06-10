@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Design Styleguide (anteprima estetica)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — fonte di verità dei colori (poi → CSS vars di Gemini)
+   Direzione: calmo & professionale (base) + esecuzione avanguardia
+   (mesh/glow, glass, effetti). Accento = verde Nhood ammorbidito.
+   ============================================================ */
+:root {
+  /* Accento — verde Nhood ammorbidito, trattato moderno */
+  --accent:        #12A877;   /* emerald sobrio */
+  --accent-hover:  #0E8E63;
+  --accent-2:      #0BA5A0;   /* teal — secondo polo del gradiente */
+  --accent-glow:   #3FD68C;   /* lime tenue — solo per i bagliori */
+  --accent-grad:   linear-gradient(135deg, #12A877 0%, #0BA5A0 100%);
+
+  /* Semafori di gravità (FISSI — sono significato, non gusto) */
+  --sev-critical:  #E5484D;
+  --sev-important: #E0922F;
+  --sev-info:      #4C7DF0;
+  --sev-ok:        #30A46C;
+
+  /* Neutri freddi (slate) — tema chiaro */
+  --bg:        #F7F9FB;
+  --surface:   #FFFFFF;
+  --surface-2: #F1F4F8;
+  --border:    #E3E8EF;
+  --text:      #0F172A;
+  --text-soft: #475569;
+  --text-mute: #94A3B8;
+
+  /* Materiali */
+  --radius:   16px;
+  --radius-sm: 10px;
+  --shadow:   0 1px 2px rgba(15,23,42,.04), 0 8px 24px rgba(15,23,42,.06);
+  --shadow-lg:0 2px 8px rgba(15,23,42,.06), 0 24px 48px rgba(15,23,42,.10);
+  --glass-bg: rgba(255,255,255,.42);
+  --glass-bd: rgba(255,255,255,.75);
+  --glass-hi: rgba(255,255,255,.95);   /* highlight speculare bordo */
+  --glass-sheen: rgba(255,255,255,.55); /* riflesso che scorre */
+  --mesh-1: #12A8773d;
+  --mesh-2: #0BA5A033;
+  --mesh-3: #6366f12b;
+}
+[data-theme="dark"] {
+  --bg:        #0B0F14;
+  --surface:   #121822;
+  --surface-2: #0E141C;
+  --border:    #1E2733;
+  --text:      #E7EDF4;
+  --text-soft: #9FB0C3;
+  --text-mute: #5B6B7E;
+  --shadow:   0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.5);
+  --shadow-lg:0 2px 8px rgba(0,0,0,.5), 0 24px 60px rgba(0,0,0,.6);
+  --glass-bg: rgba(18,24,34,.38);
+  --glass-bd: rgba(150,175,205,.28);
+  --glass-hi: rgba(190,215,245,.55);
+  --glass-sheen: rgba(200,225,255,.22);
+  --mesh-1: #12A8773a;
+  --mesh-2: #0BA5A030;
+  --mesh-3: #6366f128;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background .4s ease, color .4s ease;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* ---- Topbar ---- */
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 18px; letter-spacing: -.02em; }
+.brand .dot {
+  width: 28px; height: 28px; border-radius: 9px;
+  background: var(--accent-grad);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent), 0 6px 16px var(--mesh-1);
+}
+.toggle {
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-soft);
+  padding: 8px 14px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; transition: all .2s;
+}
+.toggle:hover { color: var(--text); border-color: var(--accent); }
+.eyebrow { color: var(--accent); font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+h1 { font-size: 30px; letter-spacing: -.03em; margin: 6px 0 4px; }
+.lead { color: var(--text-soft); max-width: 64ch; margin: 0 0 8px; }
+.section-title { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-mute); margin: 44px 0 16px; }
+
+/* ---- Hero mesh + glass ---- */
+.hero {
+  position: relative; overflow: hidden; border-radius: 24px; padding: 36px;
+  border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-lg);
+  margin-top: 20px; min-height: 340px;
+  display: flex; align-items: center; justify-content: center;  /* centra il vetro sulle sfere */
+}
+.hero-eyebrow { position: absolute; top: 24px; left: 28px; z-index: 3; }
+.hero::before {
+  content: ""; position: absolute; inset: -40%;
+  background:
+    radial-gradient(40% 50% at 20% 20%, var(--mesh-1), transparent 70%),
+    radial-gradient(45% 55% at 85% 25%, var(--mesh-2), transparent 70%),
+    radial-gradient(50% 60% at 60% 90%, var(--mesh-3), transparent 70%);
+  filter: blur(8px); animation: drift 18s ease-in-out infinite alternate;
+}
+@keyframes drift { from { transform: translate3d(-3%, -2%, 0) scale(1); } to { transform: translate3d(3%, 3%, 0) scale(1.08); } }
+/* sfere colorate dietro il vetro — danno qualcosa da "rifrangere" */
+.orb { position: absolute; border-radius: 50%; filter: blur(6px); opacity: .85; z-index: 0; }
+.orb-a { width: 220px; height: 220px; left: 30%; top: 16%; background: radial-gradient(circle at 35% 35%, #3FD68C, #0BA5A0); }
+.orb-b { width: 170px; height: 170px; left: 55%; top: 40%; background: radial-gradient(circle at 35% 35%, #7AA8FF, #4C5FE0); }
+.orb-c { width: 150px; height: 150px; left: 40%; top: 50%; background: radial-gradient(circle at 35% 35%, #FFD56B, #E0922F); }
+.hero > * { position: relative; }
+
+/* ---- LIQUID GLASS ---- vetro liquido: blur forte, rifrazione, riflesso che scorre */
+.glass {
+  position: relative; overflow: hidden; isolation: isolate;
+  /* refrazione SVG + sfocatura + saturazione: il vero liquid glass */
+  backdrop-filter: url(#liquid) blur(2px) saturate(180%) brightness(1.08);
+  -webkit-backdrop-filter: url(#liquid) blur(2px) saturate(180%) brightness(1.08);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,0) 40%),
+    var(--glass-bg);
+  border: 1px solid transparent;
+  border-radius: 22px; padding: 22px 24px; max-width: 440px;
+  /* profondità: highlight interno in alto, ombra interna in basso, ombra esterna morbida */
+  box-shadow:
+    inset 0 1px 0 var(--glass-hi),
+    inset 0 -8px 24px rgba(0,0,0,.06),
+    inset 0 0 0 1px rgba(255,255,255,.10),
+    0 10px 30px rgba(15,23,42,.12),
+    0 30px 60px rgba(15,23,42,.10);
+}
+/* bordo che cattura la luce (gradiente speculare sul perimetro) */
+.glass::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, var(--glass-hi), transparent 35%, transparent 65%, var(--glass-bd));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+/* riflesso speculare diagonale che scorre lentamente */
+.glass::after {
+  content: ""; position: absolute; top: -120%; left: -40%; width: 60%; height: 340%;
+  background: linear-gradient(105deg, transparent, var(--glass-sheen), transparent);
+  transform: rotate(18deg); filter: blur(6px); pointer-events: none;
+  animation: sheen 7s ease-in-out infinite;
+}
+@keyframes sheen { 0%,100% { left: -50%; opacity: 0; } 45% { opacity: .9; } 60% { left: 120%; opacity: .2; } }
+.glass h3 { margin: 0 0 4px; font-size: 16px; letter-spacing: -.01em; position: relative; }
+.glass p { margin: 0; color: var(--text-soft); font-size: 14px; position: relative; }
+/* secondo strato di vetro, sovrapposto, per dare profondità */
+.glass-pill {
+  display: inline-flex; align-items: center; gap: 9px; max-width: none; width: auto;
+  margin-top: -18px; margin-left: 28px; padding: 10px 16px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; color: var(--text); position: relative; z-index: 2;
+}
+.glass-pill .d { width: 8px; height: 8px; border-radius: 50%; background: var(--sev-ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sev-ok) 25%, transparent); }
+
+/* ---- KPI cards ---- */
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 760px){ .grid { grid-template-columns: 1fr; } }
+.card {
+  position: relative; overflow: hidden; border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  /* velo uniforme: sfumatura diagonale omogenea, niente macchie tonde */
+  background:
+    linear-gradient(155deg, color-mix(in srgb, var(--accent) 15%, transparent), transparent 72%),
+    var(--surface);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.55), var(--shadow);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+[data-theme="dark"] .card { box-shadow: inset 0 1px 0 rgba(255,255,255,.06), var(--shadow); }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+/* variante per la card "rischi": stesso velo, tinta importante */
+.card.warn { background: linear-gradient(155deg, color-mix(in srgb, var(--sev-important) 17%, transparent), transparent 72%), var(--surface); }
+.kpi-label { color: var(--text-soft); font-size: 13px; font-weight: 500; }
+.kpi-value { font-size: 34px; font-weight: 800; letter-spacing: -.03em; margin: 6px 0 2px; }
+.kpi-delta { font-size: 13px; font-weight: 600; color: var(--sev-ok); }
+
+/* card con bordo luminoso animato (effetto avanguardia, parsimonia) */
+.card.glow-border { background: var(--surface); }
+.card.glow-border::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius); padding: 1px;
+  background: conic-gradient(from var(--ang), transparent 0 65%, var(--accent) 80%, var(--accent-2) 95%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: spin 6s linear infinite;
+}
+@property --ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes spin { to { --ang: 360deg; } }
+
+/* ---- Grafico standard scelto: barre verticali a gradiente, animazione a cascata ---- */
+.chart { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+.bars-v { display: flex; align-items: flex-end; gap: 16px; height: 210px; }
+.cell-v { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 6px; }
+.bar-v { width: 100%; height: var(--h); background: var(--accent-grad); border-radius: 9px 9px 3px 3px;
+  transform-origin: bottom; box-shadow: 0 8px 18px var(--mesh-1); animation: vGrow .6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes vGrow { from { transform: scaleY(0); } }
+.bv-val { font-size: 12px; font-weight: 600; color: var(--text-soft); }
+.cell-v small { font-size: 12px; color: var(--text-mute); }
+/* ---- Grafico di sintesi: donut, animazione sweep sequenziale ---- */
+.donut { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; justify-content: center; }
+.donut svg { flex: 0 0 auto; }
+.donut .seg { fill: none; stroke-width: 24; transform: rotate(-90deg); transform-origin: 100px 100px;
+  animation: dgrow .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes dgrow { from { stroke-dasharray: 0 999; } }
+.donut .cn { font-size: 36px; font-weight: 800; fill: var(--text); text-anchor: middle; }
+.donut .cl { font-size: 12px; fill: var(--text-mute); text-anchor: middle; }
+.dlegend { display: grid; grid-template-columns: 1fr 1fr; gap: 11px 28px; font-size: 14px; }
+.dlegend div { display: flex; align-items: center; gap: 10px; color: var(--text-soft); }
+.dlegend i { width: 11px; height: 11px; border-radius: 3px; }
+
+/* ---- Swatches ---- */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+.sw { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); }
+.sw .chip { height: 64px; }
+.sw .meta { padding: 8px 10px; font-size: 12px; }
+.sw .meta b { display: block; font-weight: 600; }
+.sw .meta code { color: var(--text-mute); font-size: 11px; }
+
+/* ---- Chips / badges ---- */
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.badge { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent); background: color-mix(in srgb, currentColor 12%, transparent); }
+.badge .d { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.b-crit { color: var(--sev-critical); } .b-imp { color: var(--sev-important); }
+.b-info { color: var(--sev-info); } .b-ok { color: var(--sev-ok); }
+
+/* ---- Buttons ---- */
+.btns { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { font: inherit; font-weight: 600; font-size: 14px; padding: 11px 18px; border-radius: 12px; cursor: pointer; border: 1px solid transparent; transition: all .2s; }
+.btn-primary { color: #fff; background: var(--accent-grad); box-shadow: 0 8px 20px var(--mesh-1); }
+.btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.btn-ghost { background: var(--surface); border-color: var(--border); color: var(--text); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- Type scale ---- */
+.type > div { padding: 8px 0; border-bottom: 1px dashed var(--border); }
+.t-display { font-size: 38px; font-weight: 800; letter-spacing: -.035em; }
+.t-h2 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+.t-body { font-size: 15px; color: var(--text-soft); }
+.t-small { font-size: 13px; color: var(--text-mute); }
+.foot { margin-top: 48px; color: var(--text-mute); font-size: 13px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+  FILTRO LIQUID GLASS — refrazione reale via SVG displacement.
+  feTurbulence (vetro spesso e ondulato) → feDisplacementMap piega
+  lo sfondo dietro il pannello. Funziona su Chrome/Edge (Chromium).
+  ============================================================ -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="liquid" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.010" numOctaves="2" seed="9" result="noise"/>
+    <feGaussianBlur in="noise" stdDeviation="3" result="soft"/>
+    <feDisplacementMap in="SourceGraphic" in2="soft" scale="90" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Knowledge Preservation</div>
+    <button class="toggle" onclick="toggleTheme()" id="tBtn">🌙 Tema scuro</button>
+  </div>
+
+  <div class="eyebrow">Anteprima estetica · Step 1</div>
+  <h1>Design styleguide</h1>
+  <p class="lead">Calmo &amp; professionale come fondazione — sfumature mesh, vetro smerigliato ed effetti d'avanguardia sui punti focali. Accento verde, eco ammorbidita del brand. Prova il <b>tema scuro</b> in alto a destra.</p>
+
+  <!-- HERO: mesh gradient + glass -->
+  <div class="hero">
+    <div class="eyebrow hero-eyebrow">Sfumatura mesh + liquid glass</div>
+    <div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div>
+    <div class="glass">
+      <h3>Memoria aziendale viva</h3>
+      <p>142 interviste preservate · 38 insight strategici estratti questo mese.</p>
+    </div>
+  </div>
+
+  <!-- KPI CARDS: glow + bordo animato + count-up -->
+  <div class="section-title">Card KPI — bagliore, profondità, numero animato</div>
+  <div class="grid">
+    <div class="card">
+      <div class="kpi-label">Interviste completate</div>
+      <div class="kpi-value" data-count="142">0</div>
+      <div class="kpi-delta">↗ +12% sul mese</div>
+    </div>
+    <div class="card glow-border">
+      <div class="kpi-label">Insight approvati</div>
+      <div class="kpi-value" data-count="38">0</div>
+      <div class="kpi-delta">↗ +5 questa settimana</div>
+    </div>
+    <div class="card warn">
+      <div class="kpi-label">Rischi segnalati</div>
+      <div class="kpi-value" data-count="7" style="color:var(--sev-important)">0</div>
+      <div class="kpi-delta" style="color:var(--sev-important)">3 reparti coinvolti</div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="section-title">Grafico confronti — barre verticali a gradiente, animazione a cascata + valore che conta</div>
+  <div class="chart">
+    <div class="bars-v">
+      <div class="cell-v"><span class="bv-val" data-count="24">0</span><div class="bar-v" style="--h:77%;animation-delay:0s"></div><small>Tecnico</small></div>
+      <div class="cell-v"><span class="bv-val" data-count="16">0</span><div class="bar-v" style="--h:51%;animation-delay:.09s"></div><small>Operativo</small></div>
+      <div class="cell-v"><span class="bv-val" data-count="31">0</span><div class="bar-v" style="--h:100%;animation-delay:.18s"></div><small>Strategico</small></div>
+      <div class="cell-v"><span class="bv-val" data-count="11">0</span><div class="bar-v" style="--h:35%;animation-delay:.27s"></div><small>Idee</small></div>
+      <div class="cell-v"><span class="bv-val" data-count="7">0</span><div class="bar-v" style="--h:22%;animation-delay:.36s"></div><small>Rischi</small></div>
+    </div>
+  </div>
+
+  <div class="section-title">Grafico sintesi — donut (proporzioni sul totale), animazione sweep sequenziale</div>
+  <div class="chart">
+    <div class="donut">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <!-- C = 2·π·78 ≈ 490.1 · totale = 89 -->
+        <circle r="78" cx="100" cy="100" fill="none" stroke="var(--border)" stroke-width="24"/>
+        <circle class="seg" r="78" cx="100" cy="100" stroke="#12A877" stroke-dasharray="132.2 490.1" stroke-dashoffset="0"      style="animation-delay:0s"/>
+        <circle class="seg" r="78" cx="100" cy="100" stroke="#0BA5A0" stroke-dasharray="88.1 490.1"  stroke-dashoffset="-132.2" style="animation-delay:.18s"/>
+        <circle class="seg" r="78" cx="100" cy="100" stroke="#3FD68C" stroke-dasharray="170.7 490.1" stroke-dashoffset="-220.3" style="animation-delay:.36s"/>
+        <circle class="seg" r="78" cx="100" cy="100" stroke="#4C7DF0" stroke-dasharray="60.6 490.1"  stroke-dashoffset="-391.0" style="animation-delay:.54s"/>
+        <circle class="seg" r="78" cx="100" cy="100" stroke="#E0922F" stroke-dasharray="38.6 490.1"  stroke-dashoffset="-451.6" style="animation-delay:.72s"/>
+        <text class="cn" x="100" y="104" data-count="89">0</text>
+        <text class="cl" x="100" y="122">insight</text>
+      </svg>
+      <div class="dlegend">
+        <div><i style="background:#12A877"></i> Tecnico · 24</div>
+        <div><i style="background:#0BA5A0"></i> Operativo · 16</div>
+        <div><i style="background:#3FD68C"></i> Strategico · 31</div>
+        <div><i style="background:#4C7DF0"></i> Idee · 11</div>
+        <div><i style="background:#E0922F"></i> Rischi · 7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEVERITY -->
+  <div class="section-title">Semafori di gravità (fissi — significato, non gusto)</div>
+  <div class="chips">
+    <span class="badge b-crit"><span class="d"></span> Critico</span>
+    <span class="badge b-imp"><span class="d"></span> Importante</span>
+    <span class="badge b-info"><span class="d"></span> Informativo</span>
+    <span class="badge b-ok"><span class="d"></span> OK</span>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="section-title">Bottoni</div>
+  <div class="btns">
+    <button class="btn btn-primary">Genera report</button>
+    <button class="btn btn-ghost">Query RAG</button>
+    <span class="t-small">primario = gradiente accento · secondario = sobrio</span>
+  </div>
+
+  <!-- PALETTE SWATCHES -->
+  <div class="section-title">Tavolozza colori</div>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:var(--accent-grad)"></div><div class="meta"><b>Accento (gradiente)</b><code>#12A877 → #0BA5A0</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--accent)"></div><div class="meta"><b>Accento pieno</b><code>#12A877</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--sev-critical)"></div><div class="meta"><b>Critico</b><code>#E5484D</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--sev-important)"></div><div class="meta"><b>Importante</b><code>#E0922F</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--sev-info)"></div><div class="meta"><b>Info</b><code>#4C7DF0</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--bg);border-top:1px solid var(--border)"></div><div class="meta"><b>Sfondo</b><code>neutro freddo</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--surface);border-top:1px solid var(--border)"></div><div class="meta"><b>Superficie</b><code>card</code></div></div>
+    <div class="sw"><div class="chip" style="background:var(--text)"></div><div class="meta"><b>Testo</b><code>slate scuro</code></div></div>
+  </div>
+
+  <!-- TYPE -->
+  <div class="section-title">Tipografia — Inter</div>
+  <div class="type">
+    <div class="t-display">Aa — Display 38</div>
+    <div class="t-h2">Aa — Titolo sezione 24</div>
+    <div class="t-body">Aa — Corpo del testo 15, il grosso della lettura nella dashboard.</div>
+    <div class="t-small">Aa — Didascalia 13, metadati e note.</div>
+  </div>
+
+  <div class="foot">Anteprima statica · definisce i token che il frontend (Gemini) userà · tema chiaro/scuro entrambi inclusi</div>
+</div>
+
+<script>
+function toggleTheme(){
+  const r = document.documentElement;
+  const dark = r.getAttribute('data-theme') === 'dark';
+  r.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('tBtn').textContent = dark ? '🌙 Tema scuro' : '☀️ Tema chiaro';
+}
+// count-up sobrio sui KPI
+function countUp(el){
+  const target = +el.dataset.count; const dur = 1100; const t0 = performance.now();
+  function step(t){
+    const p = Math.min(1, (t - t0) / dur);
+    const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    el.textContent = Math.round(target * e);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+document.querySelectorAll('[data-count]').forEach(countUp);
+</script>
+</body>
+</html>

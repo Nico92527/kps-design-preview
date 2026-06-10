@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Tre proposte di grafico</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877; --accent-2:#0BA5A0; --accent-3:#3FD68C;
+  --info:#4C7DF0; --warn:#E0922F;
+  --bg:#F7F9FB; --surface:#FFFFFF; --border:#E3E8EF;
+  --text:#0F172A; --text-soft:#475569; --text-mute:#94A3B8;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+  --grad:linear-gradient(180deg,#12A877,#0BA5A0);
+}
+[data-theme="dark"]{
+  --bg:#0B0F14; --surface:#121822; --border:#1E2733;
+  --text:#E7EDF4; --text-soft:#9FB0C3; --text-mute:#5B6B7E;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+.wrap{max-width:1240px;margin:0 auto;padding:32px 24px 80px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.eyebrow{color:var(--accent);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:28px;letter-spacing:-.03em;margin:4px 0 6px}
+.lead{color:var(--text-soft);max-width:70ch;margin:0 0 28px}
+.toggle{border:1px solid var(--border);background:var(--surface);color:var(--text-soft);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:960px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.tag{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--grad);color:#fff;font-weight:700;font-size:13px;margin-bottom:12px}
+.ptitle{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0 0 2px}
+.pdesc{color:var(--text-soft);font-size:13px;margin:0 0 18px;min-height:34px}
+.viz{flex:1;display:flex;align-items:flex-end;justify-content:center}
+
+/* ---- 1. BARRE VERTICALI A GRADIENTE ---- */
+.bars{display:flex;align-items:flex-end;gap:14px;height:200px;width:100%;padding-top:14px}
+.bar{flex:1;border-radius:9px 9px 4px 4px;background:var(--grad);position:relative;box-shadow:0 8px 18px #12a87726;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.bar b{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-soft)}
+.bar small{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--text-mute)}
+@keyframes rise{from{height:0 !important;opacity:.3}}
+
+/* ---- 2. AREA MORBIDA ---- */
+.area{width:100%}
+.area svg{width:100%;height:220px;display:block;overflow:visible}
+.area .ln{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 1.4s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.area .dot{fill:var(--surface);stroke:var(--accent);stroke-width:3}
+.area .xl{fill:var(--text-mute);font-size:11px;text-anchor:middle}
+.area .vl{fill:var(--text-soft);font-size:11px;text-anchor:middle;font-weight:600}
+
+/* ---- 3. DONUT ---- */
+.donut{display:flex;align-items:center;gap:18px;width:100%}
+.donut svg{flex:0 0 auto}
+.donut .seg{fill:none;stroke-width:22;stroke-linecap:butt;transform:rotate(-90deg);transform-origin:90px 90px;
+  animation:grow 1.1s ease forwards}
+@keyframes grow{from{stroke-dasharray:0 999}}
+.center-num{font-size:30px;font-weight:800;fill:var(--text);text-anchor:middle}
+.center-lbl{font-size:11px;fill:var(--text-mute);text-anchor:middle}
+.legend{display:flex;flex-direction:column;gap:8px;font-size:12.5px}
+.legend div{display:flex;align-items:center;gap:8px;color:var(--text-soft)}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.foot{margin-top:34px;color:var(--text-mute);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Step 4 · scegli il grafico</div>
+      <h1>Tre proposte di grafico</h1>
+    </div>
+    <button class="toggle" onclick="tg()" id="tb">🌙 Tema scuro</button>
+  </div>
+  <p class="lead">Stessi dati — insight per categoria (Tecnico 24 · Operativo 16 · Strategico 31 · Idee 11 · Rischi 7) — resi in tre stili diversi. Tutti nella palette decisa. Scegli quello che preferisci e lo adottiamo come standard per i grafici della dashboard.</p>
+
+  <div class="grid">
+
+    <!-- 1 -->
+    <div class="panel">
+      <span class="tag">1</span>
+      <div class="ptitle">Barre a gradiente</div>
+      <p class="pdesc">Solido e diretto. Il confronto tra categorie è immediato a colpo d'occhio. Lo standard sicuro.</p>
+      <div class="viz">
+        <div class="bars">
+          <div class="bar" style="height:77%"><b>24</b><small>Tecnico</small></div>
+          <div class="bar" style="height:51%"><b>16</b><small>Operativo</small></div>
+          <div class="bar" style="height:100%"><b>31</b><small>Strateg.</small></div>
+          <div class="bar" style="height:35%"><b>11</b><small>Idee</small></div>
+          <div class="bar" style="height:22%"><b>7</b><small>Rischi</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="panel">
+      <span class="tag">2</span>
+      <div class="ptitle">Area morbida</div>
+      <p class="pdesc">Elegante e fluido. Suggerisce andamento e continuità — ottimo se i grafici mostreranno trend nel tempo.</p>
+      <div class="viz">
+        <div class="area">
+          <svg viewBox="0 0 500 210" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="af" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#12A877" stop-opacity=".38"/>
+                <stop offset="1" stop-color="#12A877" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M50,77 C100,77 100,111 150,111 C200,111 200,47 250,47 C300,47 300,133 350,133 C400,133 400,150 450,150 L450,180 L50,180 Z" fill="url(#af)"/>
+            <path class="ln" d="M50,77 C100,77 100,111 150,111 C200,111 200,47 250,47 C300,47 300,133 350,133 C400,133 400,150 450,150"/>
+            <g>
+              <circle class="dot" cx="50" cy="77" r="4.5"/><circle class="dot" cx="150" cy="111" r="4.5"/>
+              <circle class="dot" cx="250" cy="47" r="4.5"/><circle class="dot" cx="350" cy="133" r="4.5"/>
+              <circle class="dot" cx="450" cy="150" r="4.5"/>
+            </g>
+            <text class="vl" x="50" y="66">24</text><text class="vl" x="150" y="100">16</text>
+            <text class="vl" x="250" y="36">31</text><text class="vl" x="350" y="122">11</text>
+            <text class="vl" x="450" y="139">7</text>
+            <text class="xl" x="50" y="200">Tecnico</text><text class="xl" x="150" y="200">Operat.</text>
+            <text class="xl" x="250" y="200">Strateg.</text><text class="xl" x="350" y="200">Idee</text>
+            <text class="xl" x="450" y="200">Rischi</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="panel">
+      <span class="tag">3</span>
+      <div class="ptitle">Ciambella (donut)</div>
+      <p class="pdesc">Mostra le proporzioni sul totale. Look "executive", sintetico. Meno preciso nei confronti fini.</p>
+      <div class="viz">
+        <div class="donut">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <!-- C = 2*pi*68 ≈ 427.3 ; tot=89 -->
+            <circle r="68" cx="90" cy="90" fill="none" stroke="var(--border)" stroke-width="22"/>
+            <circle class="seg" r="68" cx="90" cy="90" stroke="#12A877" stroke-dasharray="115.2 427.3" stroke-dashoffset="0"/>
+            <circle class="seg" r="68" cx="90" cy="90" stroke="#0BA5A0" stroke-dasharray="76.8 427.3" stroke-dashoffset="-115.2"/>
+            <circle class="seg" r="68" cx="90" cy="90" stroke="#3FD68C" stroke-dasharray="148.8 427.3" stroke-dashoffset="-192.0"/>
+            <circle class="seg" r="68" cx="90" cy="90" stroke="#4C7DF0" stroke-dasharray="52.8 427.3" stroke-dashoffset="-340.8"/>
+            <circle class="seg" r="68" cx="90" cy="90" stroke="#E0922F" stroke-dasharray="33.6 427.3" stroke-dashoffset="-393.6"/>
+            <text class="center-num" x="90" y="92">89</text>
+            <text class="center-lbl" x="90" y="108">insight</text>
+          </svg>
+          <div class="legend">
+            <div><i style="background:#12A877"></i> Tecnico · 24</div>
+            <div><i style="background:#0BA5A0"></i> Operativo · 16</div>
+            <div><i style="background:#3FD68C"></i> Strategico · 31</div>
+            <div><i style="background:#4C7DF0"></i> Idee · 11</div>
+            <div><i style="background:#E0922F"></i> Rischi · 7</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">Anteprima statica · stessi dati, tre stili · la scelta diventa lo standard grafici della dashboard</div>
+</div>
+<script>
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';
+  r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}
+</script>
+</body>
+</html>

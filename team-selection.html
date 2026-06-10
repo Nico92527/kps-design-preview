@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Selezione dipendenti / crea team</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--accent-glow:#3FD68C;
+  --grad:linear-gradient(135deg,#12A877,#0BA5A0);
+  --bg:#F7F9FB;--surface:#FFFFFF;--surface-2:#F1F4F8;--border:#E3E8EF;
+  --text:#0F172A;--text-soft:#475569;--text-mute:#94A3B8;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+  --shadow-lg:0 2px 8px rgba(15,23,42,.06),0 24px 48px rgba(15,23,42,.10);
+}
+[data-theme="dark"]{--bg:#0B0F14;--surface:#121822;--surface-2:#0E141C;--border:#1E2733;--text:#E7EDF4;--text-soft:#9FB0C3;--text-mute:#5B6B7E;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5);--shadow-lg:0 2px 8px rgba(0,0,0,.5),0 24px 60px rgba(0,0,0,.6)}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+.wrap{max-width:1100px;margin:0 auto;padding:30px 24px 80px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.eyebrow{color:var(--accent);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:26px;letter-spacing:-.03em;margin:4px 0 4px}
+.lead{color:var(--text-soft);font-size:14px;margin:0}
+.toggle{border:1px solid var(--border);background:var(--surface);color:var(--text-soft);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
+
+/* action bar */
+.actionbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin:20px 0 22px;padding:14px 16px;border:1px solid var(--border);border-radius:16px;
+  background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(12px) saturate(160%);box-shadow:var(--shadow)}
+.search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:9px 12px}
+.search input{border:0;background:transparent;outline:none;font:inherit;font-size:14px;color:var(--text);width:100%}
+.search svg{flex:0 0 auto;opacity:.5}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--text-soft);padding:7px 13px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px;font-weight:600;transition:.15s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--grad);color:#fff;border-color:transparent}
+.selrail{display:flex;align-items:center;gap:10px;margin-left:auto}
+.selavs{display:flex}
+.selavs .av{width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);margin-left:-8px;font-size:11px}
+.selavs .more{display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--text-soft);width:30px;height:30px;border-radius:50%;border:2px solid var(--surface);margin-left:-8px;font-size:11px;font-weight:700}
+.btn{border:0;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:12px;cursor:pointer;background:var(--grad);color:#fff;box-shadow:0 8px 20px #12a87726;transition:.2s;white-space:nowrap}
+.btn:hover:not(:disabled){filter:brightness(1.06);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+.sectag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-soft);
+  background:var(--surface-2);border:1px solid var(--border);padding:5px 11px;border-radius:8px;margin:24px 0 16px}
+
+/* avatar (iniziali su gradiente) */
+.av{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;letter-spacing:.02em;flex:0 0 auto}
+
+/* ---- RESPONSABILI: card grandi ---- */
+.leads{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.lead-card{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;cursor:pointer;
+  box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s,border-color .2s}
+.lead-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.portrait{height:150px;display:flex;align-items:center;justify-content:center;position:relative}
+.portrait .av{width:74px;height:74px;border-radius:20px;font-size:26px;box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.04))}
+.lc-body{padding:14px 16px 16px}
+.lc-name{font-weight:700;font-size:15px;letter-spacing:-.01em}
+.lc-role{color:var(--text-soft);font-size:12.5px;margin-top:2px}
+.check{position:absolute;top:10px;right:10px;width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.85);
+  background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:.18s}
+.check svg{opacity:0;transform:scale(.5);transition:.18s}
+.sel .check{background:var(--accent);border-color:#fff}
+.sel .check svg{opacity:1;transform:scale(1)}
+.sel.lead-card{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 45%,transparent),var(--shadow-lg)}
+
+/* ---- TEAM: lista compatta ---- */
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:13px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;cursor:pointer;transition:.15s}
+.row:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--border));transform:translateX(2px)}
+.row .av{width:40px;height:40px;border-radius:12px;font-size:15px}
+.r-main{flex:1;min-width:0}
+.r-name{font-weight:600;font-size:14px}
+.r-role{color:var(--text-mute);font-size:12px}
+.r-dept{font-size:11.5px;color:var(--text-soft);background:var(--surface-2);border:1px solid var(--border);padding:4px 9px;border-radius:999px}
+.rcheck{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:.15s;flex:0 0 auto}
+.rcheck svg{opacity:0;transform:scale(.5);transition:.15s}
+.row.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+.row.sel .rcheck{background:var(--accent);border-color:var(--accent)}
+.row.sel .rcheck svg{opacity:1;transform:scale(1)}
+.hidden{display:none!important}
+.foot{margin-top:36px;color:var(--text-mute);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Org · selezione dipendenti</div>
+      <h1>Crea un team / gruppo</h1>
+      <p class="lead">Seleziona i dipendenti da includere. Cerca, filtra per reparto, poi crea il gruppo.</p>
+    </div>
+    <button class="toggle" onclick="tg()" id="tb">🌙 Tema scuro</button>
+  </div>
+
+  <div class="actionbar">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" placeholder="Cerca per nome o ruolo…" oninput="filter()">
+    </div>
+    <div class="chips" id="depts"></div>
+    <div class="selrail">
+      <div class="selavs" id="selavs"></div>
+      <button class="btn" id="create" disabled>Crea gruppo</button>
+    </div>
+  </div>
+
+  <span class="sectag">Responsabili</span>
+  <div class="leads" id="leads"></div>
+
+  <span class="sectag">Team</span>
+  <div class="list" id="list"></div>
+
+  <div class="foot">Mockup di riferimento · card selezionabili, avatar a iniziali (sostituibili con foto) · stile KPS</div>
+</div>
+
+<script>
+const CHECK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12l5 5L20 7"/></svg>';
+const GRADS=['linear-gradient(135deg,#12A877,#0BA5A0)','linear-gradient(135deg,#0BA5A0,#4C7DF0)','linear-gradient(135deg,#3FD68C,#12A877)','linear-gradient(135deg,#4C7DF0,#6366F1)','linear-gradient(135deg,#12A877,#3FD68C)','linear-gradient(135deg,#0BA5A0,#12A877)'];
+const LEADS=[
+  {n:'Giulia Ferrara',r:'Direttrice Operazioni',d:'Operations'},
+  {n:'Marco De Santis',r:'CTO',d:'Engineering'},
+  {n:'Elena Bianchi',r:'Head of People',d:'HR'},
+  {n:'Paolo Greco',r:'Direttore Commerciale',d:'Sales'},
+  {n:'Sara Moretti',r:'Head of Product',d:'Product'},
+];
+const TEAM=[
+  {n:'Luca Romano',r:'Senior Software Engineer',d:'Engineering'},
+  {n:'Chiara Costa',r:'Product Designer',d:'Product'},
+  {n:'Davide Marino',r:'Data Analyst',d:'Operations'},
+  {n:'Francesca Rizzo',r:'HR Specialist',d:'HR'},
+  {n:'Andrea Galli',r:'Account Executive',d:'Sales'},
+  {n:'Martina Conti',r:'Backend Engineer',d:'Engineering'},
+  {n:'Stefano Villa',r:'Logistica & Magazzino',d:'Operations'},
+  {n:'Alessia Fontana',r:'Marketing Specialist',d:'Sales'},
+  {n:'Roberto Esposito',r:'QA Engineer',d:'Engineering'},
+  {n:'Valentina Russo',r:'Customer Success',d:'Sales'},
+];
+const ALL=[...LEADS.map((p,i)=>({...p,id:'L'+i,lead:true})),...TEAM.map((p,i)=>({...p,id:'T'+i}))];
+const sel=new Set();
+function initials(n){return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();}
+function grad(id){let h=0;for(const c of id)h+=c.charCodeAt(0);return GRADS[h%GRADS.length];}
+
+// chips reparti
+const depts=['Tutti',...new Set(ALL.map(p=>p.d))];
+let activeDept='Tutti';
+document.getElementById('depts').innerHTML=depts.map((d,i)=>`<button class="chip ${i===0?'on':''}" data-d="${d}" onclick="setDept(this)">${d}</button>`).join('');
+
+// render
+document.getElementById('leads').innerHTML=ALL.filter(p=>p.lead).map(p=>`
+  <div class="lead-card" data-id="${p.id}" data-n="${p.n.toLowerCase()} ${p.r.toLowerCase()}" data-d="${p.d}" onclick="toggle('${p.id}')">
+    <div class="check">${CHECK}</div>
+    <div class="portrait" style="background:${grad(p.id)}"><div class="av" style="background:rgba(255,255,255,.15)">${initials(p.n)}</div></div>
+    <div class="lc-body"><div class="lc-name">${p.n}</div><div class="lc-role">${p.r}</div></div>
+  </div>`).join('');
+
+document.getElementById('list').innerHTML=ALL.filter(p=>!p.lead).map(p=>`
+  <div class="row" data-id="${p.id}" data-n="${p.n.toLowerCase()} ${p.r.toLowerCase()}" data-d="${p.d}" onclick="toggle('${p.id}')">
+    <div class="av" style="background:${grad(p.id)}">${initials(p.n)}</div>
+    <div class="r-main"><div class="r-name">${p.n}</div><div class="r-role">${p.r}</div></div>
+    <span class="r-dept">${p.d}</span>
+    <div class="rcheck">${CHECK}</div>
+  </div>`).join('');
+
+function toggle(id){
+  sel.has(id)?sel.delete(id):sel.add(id);
+  document.querySelectorAll(`[data-id="${id}"]`).forEach(el=>el.classList.toggle('sel',sel.has(id)));
+  update();
+}
+function update(){
+  const n=sel.size;
+  const c=document.getElementById('create');
+  c.disabled=n===0; c.textContent=n?`Crea gruppo · ${n} selezionat${n===1?'o':'i'}`:'Crea gruppo';
+  const arr=[...sel].slice(0,5).map(id=>{const p=ALL.find(x=>x.id===id);return `<div class="av" style="background:${grad(id)}">${initials(p.n)}</div>`;});
+  if(sel.size>5)arr.push(`<div class="more">+${sel.size-5}</div>`);
+  document.getElementById('selavs').innerHTML=arr.join('');
+}
+function setDept(btn){activeDept=btn.dataset.d;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===btn));filter();}
+function filter(){
+  const q=document.getElementById('q').value.toLowerCase().trim();
+  document.querySelectorAll('[data-n]').forEach(el=>{
+    const okQ=!q||el.dataset.n.includes(q);
+    const okD=activeDept==='Tutti'||el.dataset.d===activeDept;
+    el.classList.toggle('hidden',!(okQ&&okD));
+  });
+}
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}
+</script>
+</body>
+</html>

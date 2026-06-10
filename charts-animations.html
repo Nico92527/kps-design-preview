@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — 5 animazioni del grafico</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877; --accent-2:#0BA5A0;
+  --bg:#F7F9FB; --surface:#FFFFFF; --border:#E3E8EF;
+  --text:#0F172A; --text-soft:#475569; --text-mute:#94A3B8;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+  --grad:linear-gradient(135deg,#12A877,#0BA5A0);
+}
+[data-theme="dark"]{--bg:#0B0F14;--surface:#121822;--border:#1E2733;--text:#E7EDF4;--text-soft:#9FB0C3;--text-mute:#5B6B7E;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+.wrap{max-width:1240px;margin:0 auto;padding:32px 24px 80px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.eyebrow{color:var(--accent);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:28px;letter-spacing:-.03em;margin:4px 0 6px}
+.lead{color:var(--text-soft);max-width:72ch;margin:0 0 24px}
+.controls{display:flex;gap:10px;align-items:center}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px;font-weight:600;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.solid{background:var(--grad);color:#fff;border-color:transparent}
+.btn.solid:hover{filter:brightness(1.06);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;text-align:center}
+.tag{align-self:flex-start;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:8px;background:var(--grad);color:#fff;font-weight:700;font-size:13px;margin-bottom:10px}
+.ptitle{font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0 0 2px;align-self:flex-start}
+.pdesc{color:var(--text-soft);font-size:13px;margin:0 0 12px;min-height:52px;align-self:flex-start;text-align:left}
+.viz{height:200px;display:flex;align-items:center;justify-content:center}
+
+/* ---- donut base (stato finale = idle) ---- */
+.dsvg{transform-origin:center}
+.seg{fill:none;stroke-width:24;transform:rotate(-90deg);transform-origin:100px 100px}
+.cn{font-size:34px;font-weight:800;fill:var(--text);text-anchor:middle}
+.cl{font-size:11px;fill:var(--text-mute);text-anchor:middle}
+
+/* ---- 1. Sweep sequenziale ---- */
+.a1.play .seg{animation:drawseg .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes drawseg{from{stroke-dasharray:0 999}}
+/* ---- 2. Tutti insieme (un solo respiro) ---- */
+.a2.play .seg{animation:drawseg .95s cubic-bezier(.45,0,.2,1) both}
+/* ---- 3. Bloom elastico (scala + dissolvenza, con rimbalzo) ---- */
+.a3.play .dsvg{animation:bloom .85s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes bloom{from{transform:scale(.5);opacity:0}}
+/* ---- 4. Spin-in (rotazione d'ingresso) ---- */
+.a4.play .dsvg{animation:spinin .95s cubic-bezier(.2,.8,.2,1) both}
+@keyframes spinin{from{transform:rotate(-135deg) scale(.8);opacity:0}}
+/* ---- 5. Materializzazione (lo spessore cresce) ---- */
+.a5.play .seg{animation:thicken .7s ease both}
+@keyframes thicken{from{stroke-width:0;opacity:.1}}
+
+.replay{margin-top:6px;font-size:12px;padding:6px 14px}
+.foot{margin-top:34px;color:var(--text-mute);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Step 4 · scegli l'animazione</div>
+      <h1>5 animazioni di creazione del grafico</h1>
+    </div>
+    <div class="controls">
+      <button class="btn solid" onclick="playAll()">▶ Rigioca tutte</button>
+      <button class="btn" onclick="tg()" id="tb">🌙 Scuro</button>
+    </div>
+  </div>
+  <p class="lead">Stesso donut, cinque modi di "nascere" — tutti col numero che conta al centro. Premi <b>Rigioca</b> sotto ciascuno (o "Rigioca tutte") per rivederle. Scegli la tua preferita: diventa l'animazione standard dei grafici.</p>
+
+  <div class="grid" id="grid">
+    <div class="panel a1"><span class="tag">1</span><div class="ptitle">Sweep sequenziale</div><p class="pdesc">I segmenti si disegnano uno dopo l'altro attorno all'anello. Racconta i dati con ordine, molto raffinato.</p><div class="viz"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    <div class="panel a2"><span class="tag">2</span><div class="ptitle">Un solo respiro</div><p class="pdesc">Tutti i segmenti si disegnano insieme in un movimento unico e fluido. Pulito e veloce.</p><div class="viz"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    <div class="panel a3"><span class="tag">3</span><div class="ptitle">Bloom elastico</div><p class="pdesc">Il grafico "sboccia" dal centro con una scala e un piccolo rimbalzo morbido. Vivace ma elegante.</p><div class="viz"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    <div class="panel a4"><span class="tag">4</span><div class="ptitle">Spin-in</div><p class="pdesc">L'anello entra ruotando e mettendosi a fuoco. Dinamico, dà un tocco "premium" da demo.</p><div class="viz"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    <div class="panel a5"><span class="tag">5</span><div class="ptitle">Materializzazione</div><p class="pdesc">Lo spessore dell'anello cresce da zero fino a solidificarsi. Sottile, sofisticato, mai invadente.</p><div class="viz"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+  </div>
+
+  <div class="foot">Anteprima · stesso dato, 5 animazioni · la scelta diventa lo standard di movimento dei grafici</div>
+</div>
+
+<script>
+const DATA=[{n:'Tecnico',v:24,c:'#12A877'},{n:'Operativo',v:16,c:'#0BA5A0'},{n:'Strategico',v:31,c:'#3FD68C'},{n:'Idee',v:11,c:'#4C7DF0'},{n:'Rischi',v:7,c:'#E0922F'}];
+const TOT=89, R=78, C=2*Math.PI*R;
+function donutSVG(stagger){
+  let off=0, segs='';
+  DATA.forEach((d,i)=>{
+    const len=d.v/TOT*C;
+    const delay=stagger?(i*0.14).toFixed(2)+'s':'0s';
+    segs+=`<circle class="seg" r="${R}" cx="100" cy="100" stroke="${d.c}" stroke-dasharray="${len.toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(-off).toFixed(1)}" style="animation-delay:${delay}"/>`;
+    off+=len;
+  });
+  return `<svg class="dsvg" width="185" height="185" viewBox="0 0 200 200">
+    <circle r="${R}" cx="100" cy="100" fill="none" stroke="var(--border)" stroke-width="24"/>
+    ${segs}
+    <text class="cn" x="100" y="104" data-count="${TOT}">0</text>
+    <text class="cl" x="100" y="122">insight</text></svg>`;
+}
+// segmenti scaglionati per 1 e 5 (animazioni per-segmento)
+document.querySelectorAll('.panel').forEach(p=>{
+  const stagger = p.classList.contains('a1')||p.classList.contains('a5');
+  p.querySelector('.viz').innerHTML = donutSVG(stagger);
+});
+
+function countUp(el){
+  const target=+el.dataset.count, dur=1100, t0=performance.now();
+  function step(t){const pr=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-pr,3);el.textContent=Math.round(target*e);if(pr<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+function play(panel){
+  panel.classList.remove('play'); void panel.offsetWidth; panel.classList.add('play');
+  const t=panel.querySelector('[data-count]'); if(t){t.textContent='0';countUp(t);}
+}
+function playOne(btn){ play(btn.closest('.panel')); }
+function playAll(){ document.querySelectorAll('.panel').forEach((p,i)=>setTimeout(()=>play(p),i*120)); }
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Scuro':'☀️ Chiaro';}
+window.addEventListener('load',()=>setTimeout(playAll,250));
+</script>
+</body>
+</html>

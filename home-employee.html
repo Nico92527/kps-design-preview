@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Home Dipendente</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--grad:linear-gradient(135deg,#12A877,#0BA5A0);--accent-glow:#3FD68C;
+  --sev-info:#4C7DF0;
+  --text:#0B2A22;--text-soft:#3a5a52;--text-mute:#8aa79c;
+  --surface:#ffffff;--surface-2:#eef4f1;--border:#e0eae5;
+  --glass-bg:rgba(255,255,255,.5);--glass-hi:rgba(255,255,255,.95);--glass-bd:rgba(255,255,255,.7);
+  --shadow:0 1px 2px rgba(15,42,34,.04),0 8px 24px rgba(15,42,34,.06);
+}
+[data-theme="dark"]{--text:#EAF5F0;--text-soft:#9fc7ba;--text-mute:#5e7d72;--surface:#101a16;--surface-2:#0c1410;--border:#1c2a24;
+  --glass-bg:rgba(18,30,28,.4);--glass-hi:rgba(180,230,210,.5);--glass-bd:rgba(150,200,180,.26);--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5)}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;background:#fff}
+[data-theme="dark"] body{background:#05080a}
+.stage{position:fixed;inset:18px;border-radius:32px;overflow:hidden;box-shadow:0 2px 6px rgba(15,42,34,.06),0 30px 80px rgba(15,42,34,.16);border:1px solid rgba(15,42,34,.05);
+  background:radial-gradient(70% 55% at 62% 18%,#fff 0%,rgba(255,255,255,0) 60%),linear-gradient(160deg,#eefdf8,#eaf7ff 55%,#f4fffb)}
+[data-theme="dark"] .stage{background:linear-gradient(160deg,#08110e,#0a1117 55%,#0a1410);border-color:rgba(150,200,180,.1)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.22}
+.o1{width:380px;height:380px;left:-6%;top:34%;background:radial-gradient(circle,#3FD68C,#0BA5A0)}
+.o2{width:320px;height:320px;right:-5%;top:-6%;background:radial-gradient(circle,#9DC0FF,#5E78E6)}
+.glass{position:relative;backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%);
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,0) 44%),var(--glass-bg);box-shadow:inset 0 1px 0 var(--glass-hi),var(--shadow)}
+
+.shell{position:relative;z-index:2;height:100%;display:flex;padding:16px;gap:16px}
+.sidebar{width:300px;flex:0 0 auto;border-radius:26px;padding:26px 20px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em;padding:4px 10px 0}
+.brand .dot{width:32px;height:32px;border-radius:10px;background:var(--grad);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.menu{display:flex;flex-direction:column;gap:4px;margin-top:26px}
+.mlabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);padding:12px 12px 5px}
+.item{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;color:var(--text-soft);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
+.item svg{opacity:.8;width:19px;height:19px}.item.active{background:var(--grad);color:#fff;box-shadow:0 8px 18px #12a87738}.item.active svg{opacity:1}
+.side-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:14px;border-top:1px solid var(--glass-bd)}
+
+.main{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;padding:4px 6px 16px}
+.hello h1{font-size:25px;letter-spacing:-.03em;margin:0}.hello p{margin:3px 0 0;color:var(--text-soft);font-size:13.5px}
+.navbtn{border:1px solid var(--border);background:var(--surface);font:inherit;font-weight:600;font-size:13px;padding:9px 15px;border-radius:999px;cursor:pointer;color:var(--text-soft)}
+.dash{flex:1;overflow:auto;padding:2px 6px 10px;display:flex;flex-direction:column;gap:16px}
+.reveal{animation:fadeup .5s cubic-bezier(.2,.8,.2,1) both}@keyframes fadeup{from{opacity:0;transform:translateY(12px)}}
+
+/* HERO: prossima intervista (la cosa più importante) */
+.next{position:relative;overflow:hidden;border-radius:22px;padding:28px 30px;color:#fff;
+  background:linear-gradient(135deg,#12A877,#0BA5A0)}
+.next::after{content:"";position:absolute;width:300px;height:300px;right:-60px;top:-90px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent 65%);opacity:.5}
+.next .eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.next h2{font-size:26px;letter-spacing:-.02em;margin:8px 0 6px;position:relative}
+.next p{margin:0 0 18px;opacity:.92;font-size:14.5px;max-width:54ch;position:relative}
+.window{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;margin-bottom:20px;position:relative}
+.cta{display:flex;gap:12px;flex-wrap:wrap;position:relative}
+.btn{font:inherit;font-weight:700;font-size:14.5px;padding:13px 22px;border-radius:13px;cursor:pointer;border:0;display:inline-flex;align-items:center;gap:9px}
+.btn.primary{background:#fff;color:var(--accent)}
+.btn.ghost{background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.35)}
+
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.row{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow)}
+.ctitle{font-size:14px;font-weight:700;margin:0 0 16px}
+.contrib{display:flex;gap:24px;flex-wrap:wrap}
+.stat .v{font-size:26px;font-weight:800;letter-spacing:-.02em}.stat .l{font-size:12.5px;color:var(--text-soft)}
+.hist{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:center;gap:13px;padding:12px 2px;border-bottom:1px solid var(--border);font-size:13.5px}.hrow:last-child{border-bottom:0}
+.hrow .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:0 0 auto}
+.hrow .hm{flex:1}.hrow .hu{font-size:11.5px;color:var(--text-mute)}
+.hrow .tag{font-size:11px;font-weight:700;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:4px 9px;border-radius:999px}
+.hrow .rev{font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;white-space:nowrap}
+.hrow{cursor:pointer;border-radius:10px;transition:background .15s;padding-left:8px;padding-right:8px}
+.hrow:hover{background:var(--surface-2)}
+/* second brain (RAG personale) */
+.brain{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow)}
+.brain .bt{display:flex;align-items:center;gap:11px;font-size:15px;font-weight:700;margin-bottom:5px}
+.brain .bt .bi{width:32px;height:32px;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);display:flex;align-items:center;justify-content:center;font-size:17px}
+.brain>p{margin:0 0 14px;font-size:13px;color:var(--text-soft);max-width:62ch}
+.brainbar{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:11px 12px 11px 16px}
+.brainbar input{flex:1;border:0;background:transparent;outline:none;font:inherit;font-size:14.5px;color:var(--text)}
+.brainbar button{flex:0 0 auto;width:40px;height:40px;border-radius:11px;border:0;background:var(--grad);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.brain .hintp{margin:11px 0 0;font-size:11.5px;color:var(--text-mute)}
+.notif{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;line-height:1.4;padding:10px 0}
+.notif .nd{width:8px;height:8px;border-radius:50%;margin-top:5px;flex:0 0 auto}
+.privacy{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--text-mute);padding:4px 6px}
+/* intervista in pausa da riprendere (urgente, in cima) */
+.resume{display:flex;align-items:center;gap:18px;background:var(--surface);border:1.5px solid color-mix(in srgb,var(--accent) 50%,var(--border));border-radius:18px;padding:18px 22px;box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 10%,transparent),var(--shadow)}
+.resume .ric{width:46px;height:46px;border-radius:13px;background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:20px}
+.resume .rm{flex:1;min-width:0}.resume .rt{font-weight:700;font-size:15px}.resume .rs{font-size:12.5px;color:var(--text-soft);margin-top:2px}
+.rbar{height:6px;border-radius:3px;background:var(--surface-2);margin-top:10px;max-width:280px;overflow:hidden}.rbar span{display:block;height:100%;background:var(--grad);border-radius:3px;width:40%}
+.resume .rb{flex:0 0 auto;font:inherit;font-weight:700;font-size:14px;padding:12px 20px;border-radius:12px;border:0;cursor:pointer;background:var(--grad);color:#fff;box-shadow:0 8px 18px #12a87738;display:inline-flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="shell">
+    <aside class="sidebar glass">
+      <div class="brand"><span class="dot"></span> KPS</div>
+      <nav class="menu">
+        <span class="mlabel">Area personale</span>
+        <a class="item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/></svg> Le mie interviste</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a4 4 0 0 0-4 4 3.5 3.5 0 0 0-2 6.3A3.5 3.5 0 0 0 8 20a4 4 0 0 0 8 0 3.5 3.5 0 0 0 2-6.7A3.5 3.5 0 0 0 16 7a4 4 0 0 0-4-4Z"/><path d="M12 3v18"/></svg> Il mio second brain</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> Calendario</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.4"/><path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6"/></svg> Il mio profilo</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg> Notifiche</a>
+      </nav>
+      <div class="side-bottom">
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="hello"><h1>Ciao Marco 👋</h1><p>Bello riaverti — qui lo spazio è tuo.</p></div>
+        <button class="navbtn" onclick="tg()" id="tb">🌙 Tema scuro</button>
+      </div>
+
+      <div class="dash">
+        <!-- URGENTE: intervista in pausa da riprendere -->
+        <div class="resume reveal">
+          <div class="ric">⏸</div>
+          <div class="rm">
+            <div class="rt">Hai un'intervista in pausa</div>
+            <div class="rs">Eri all'argomento 2 di 5 · interrotta ieri alle 16:20 · riprendila entro domani per non perderla</div>
+            <div class="rbar"><span></span></div>
+          </div>
+          <button class="rb">▶ Riprendi da dove eri</button>
+        </div>
+
+        <!-- LA COSA PIÙ IMPORTANTE (nuovo ciclo): la prossima intervista -->
+        <div class="next reveal" style="animation-delay:.05s">
+          <div class="eyebrow">Il tuo spazio</div>
+          <h2>C'è un sapere che hai solo tu 🌱</h2>
+          <p>Quindici minuti, quando vuoi: uno spazio tutto tuo per dare voce alla tua esperienza, alle tue idee e al tuo modo di vedere le cose. Nessun giudizio — solo la tua prospettiva, che vale.</p>
+          <div class="window">⏳ Hai tempo fino a venerdì 14 giugno · mancano 4 giorni</div>
+          <div class="cta">
+            <button class="btn primary">▶ Inizia ora</button>
+            <button class="btn ghost">📅 Scegli un momento</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card reveal" style="animation-delay:.06s">
+            <div class="ctitle">Il tuo percorso</div>
+            <div class="contrib">
+              <div class="stat"><div class="v" data-count="6">0</div><div class="l">interviste completate</div></div>
+              <div class="stat"><div class="v">1h 20m</div><div class="l">di sapere condiviso</div></div>
+              <div class="stat"><div class="v">12 mag</div><div class="l">ultima intervista</div></div>
+            </div>
+          </div>
+          <div class="card reveal" style="animation-delay:.12s">
+            <div class="ctitle">Promemoria</div>
+            <div class="notif"><span class="nd" style="background:var(--accent)"></span><div>La finestra del ciclo di giugno si chiude tra <b>4 giorni</b>. Quando ti è comodo!</div></div>
+            <div class="notif"><span class="nd" style="background:var(--sev-info)"></span><div>Hai aggiunto l'intervista al calendario per <b>giovedì 13, ore 15:00</b>.</div></div>
+          </div>
+        </div>
+
+        <div class="brain reveal" style="animation-delay:.16s">
+          <div class="bt"><span class="bi">🧠</span> Il tuo second brain</div>
+          <p>Tutto quello che hai raccontato resta anche una tua memoria personale. Cercala quando ti serve — è privata, la vedi e la usi solo tu.</p>
+          <div class="brainbar"><input placeholder="Chiedi alle tue memorie… es. come avevo risolto il downtime di maggio?"><button><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button></div>
+          <p class="hintp">🔒 Cerca solo tra le tue interviste · nessun altro vede queste ricerche.</p>
+        </div>
+
+        <div class="card reveal" style="animation-delay:.22s">
+          <div class="ctitle">Le tue interviste · <span style="font-weight:500;color:var(--text-mute)">aprile e le altre, quando vuoi rileggerle</span></div>
+          <div class="hist">
+            <div class="hrow"><span class="dot"></span><div class="hm">Intervista periodica · Maggio<div class="hu">Progetto migrazione · processi di rilascio</div></div><span class="hu">12 mag · 18 min</span><span class="tag">✓ Preservata</span><span class="rev">Rivedi →</span></div>
+            <div class="hrow"><span class="dot"></span><div class="hm">Intervista periodica · Aprile<div class="hu">Relazioni cliente · know-how tecnico</div></div><span class="hu">9 apr · 22 min</span><span class="tag">✓ Preservata</span><span class="rev">Rivedi →</span></div>
+            <div class="hrow"><span class="dot"></span><div class="hm">Intervista ad-hoc · richiesta dal manager<div class="hu">Blocchi sul progetto X</div></div><span class="hu">21 mar · 14 min</span><span class="tag">✓ Preservata</span><span class="rev">Rivedi →</span></div>
+          </div>
+        </div>
+
+        <div class="privacy reveal" style="animation-delay:.24s">
+          🔒 Le tue risposte sono protette: il management vede solo sintesi anonime e aggregate, mai il testo integrale senza una tua autorizzazione. Il punteggio non ti viene mostrato perché non è un giudizio su di te.
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+function countUp(el){const t=+el.dataset.count,dur=900,t0=performance.now();function s(n){const p=Math.min(1,(n-t0)/dur);el.textContent=Math.round(t*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(s);}requestAnimationFrame(s);}
+document.querySelectorAll('[data-count]').forEach(countUp);
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}
+</script>
+</body>
+</html>

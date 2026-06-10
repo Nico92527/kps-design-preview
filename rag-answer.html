@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Risposta RAG (dove vedi la risposta)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--grad:linear-gradient(135deg,#12A877,#0BA5A0);
+  --text:#0B2A22;--text-soft:#3a5a52;--text-mute:#8aa79c;
+  --surface:#ffffff;--surface-2:#eef4f1;--border:#e0eae5;
+  --glass-bg:rgba(255,255,255,.5);--glass-hi:rgba(255,255,255,.95);--glass-sheen:rgba(255,255,255,.5);--glass-bd:rgba(255,255,255,.7);
+}
+[data-theme="dark"]{--text:#EAF5F0;--text-soft:#9fc7ba;--text-mute:#5e7d72;--surface:#101a16;--surface-2:#0c1410;--border:#1c2a24;
+  --glass-bg:rgba(18,30,28,.4);--glass-hi:rgba(180,230,210,.5);--glass-sheen:rgba(200,255,235,.2);--glass-bd:rgba(150,200,180,.26)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;background:#fff}
+[data-theme="dark"] body{background:#05080a}
+.stage{position:fixed;inset:18px;border-radius:32px;overflow:hidden;box-shadow:0 2px 6px rgba(15,42,34,.06),0 30px 80px rgba(15,42,34,.16);border:1px solid rgba(15,42,34,.05);
+  background:radial-gradient(70% 60% at 60% 30%,#fff 0%,rgba(255,255,255,0) 60%),linear-gradient(160deg,#eefdf8,#eaf7ff 55%,#f4fffb)}
+[data-theme="dark"] .stage{background:linear-gradient(160deg,#08110e,#0a1117 55%,#0a1410);border-color:rgba(150,200,180,.1)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.28}
+.o1{width:420px;height:420px;left:-8%;top:30%;background:radial-gradient(circle,#3FD68C,#0BA5A0)}
+.o2{width:380px;height:380px;right:-6%;top:-6%;background:radial-gradient(circle,#9DC0FF,#5E78E6)}
+
+.glass{position:relative;overflow:hidden;isolation:isolate;backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.05);-webkit-backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.05);
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,0) 44%),var(--glass-bg);
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -10px 26px rgba(0,0,0,.05),0 10px 30px rgba(15,42,34,.1),0 30px 60px rgba(15,42,34,.1)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,var(--glass-hi),transparent 38%,transparent 62%,var(--glass-bd));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+.shell{position:relative;z-index:2;height:100%;display:flex;padding:16px;gap:16px}
+.sidebar{width:300px;flex:0 0 auto;border-radius:26px;padding:26px 20px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em;padding:4px 10px 0}
+.brand .dot{width:32px;height:32px;border-radius:10px;background:var(--grad);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.menu{display:flex;flex-direction:column;gap:4px;margin-top:26px}
+.mlabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);padding:12px 12px 5px}
+.item{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;color:var(--text-soft);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
+.item svg{opacity:.8;width:19px;height:19px}
+.item.active{background:var(--grad);color:#fff;box-shadow:0 8px 18px #12a87738}.item.active svg{opacity:1}
+.side-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:14px;border-top:1px solid var(--glass-bd)}
+
+.main{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;justify-content:flex-end;padding:2px 4px 10px}
+.navbtn{border:1px solid var(--border);background:var(--surface);font:inherit;font-weight:600;font-size:13px;padding:9px 15px;border-radius:999px;cursor:pointer;color:var(--text-soft)}
+.scroll{flex:1;overflow:auto;padding:6px 28px 12px;max-width:860px;width:100%;margin:0 auto}
+.reveal{animation:fadeup .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes fadeup{from{opacity:0;transform:translateY(14px)}}
+
+.q{display:flex;align-items:center;gap:12px;font-size:24px;font-weight:800;letter-spacing:-.02em;margin:6px 0 20px}
+.q .qi{flex:0 0 auto;width:38px;height:38px;border-radius:11px;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px #12a87733}
+.acard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px 24px;box-shadow:0 1px 2px rgba(15,42,34,.04),0 10px 26px rgba(15,42,34,.06)}
+.alabel{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.alabel .sparkle{width:15px;height:15px}
+.atext{font-size:16px;line-height:1.62;color:var(--text)}
+.atext cite{font-style:normal;font-weight:700;color:var(--accent);font-size:12px;vertical-align:super;cursor:pointer}
+.sectitle{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-mute);margin:26px 0 14px}
+
+.people{display:flex;flex-direction:column;gap:12px}
+.pcard{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:0 1px 2px rgba(15,42,34,.04)}
+.pcard:hover{border-color:color-mix(in srgb,var(--accent) 40%,var(--border))}
+.av{flex:0 0 auto;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px}
+.pmain{flex:1;min-width:0}
+.pname{font-weight:700;font-size:15px}
+.prole{font-size:12.5px;color:var(--text-mute)}
+.psnip{font-size:13px;color:var(--text-soft);margin-top:6px;font-style:italic;border-left:2px solid var(--border);padding-left:10px}
+.pright{flex:0 0 auto;width:120px;text-align:right}
+.reln{font-size:12px;font-weight:700;color:var(--accent)}
+.rel{height:6px;border-radius:3px;background:var(--surface-2);margin-top:6px;overflow:hidden}
+.rel span{display:block;height:100%;border-radius:3px;background:var(--grad);width:0;animation:fill 1s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes fill{from{width:0}}
+.plink{font-size:12px;color:var(--accent);font-weight:600;margin-top:8px;display:inline-block;cursor:pointer}
+
+.sources{display:flex;flex-wrap:wrap;gap:10px}
+.src{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 13px;font-size:12.5px;color:var(--text-soft);cursor:pointer}
+.src b{color:var(--text)}
+.src .n{width:20px;height:20px;border-radius:6px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:var(--accent)}
+.audit{display:flex;align-items:center;gap:9px;margin:22px 0 8px;font-size:12px;color:var(--text-mute)}
+
+/* follow-up ask bar (sticky bottom) */
+.followwrap{position:relative;padding:14px 28px 4px}
+.ask-halo{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:min(720px,92%);height:64px;border-radius:999px;z-index:0;pointer-events:none;filter:blur(24px);opacity:.8;
+  background:radial-gradient(60% 130% at 22% 50%,#3FD68C,transparent 70%),radial-gradient(55% 130% at 80% 50%,#4C7DF0,transparent 70%)}
+.ask{position:relative;z-index:1;margin:0 auto;display:flex;align-items:center;gap:12px;width:min(720px,92%);padding:11px 11px 11px 26px;border-radius:999px}
+.ask input{flex:1;min-width:0;border:0;background:transparent;outline:none;font:inherit;font-size:16px;color:var(--text)}
+.ask input::placeholder{color:color-mix(in srgb,var(--text-soft) 75%,transparent)}
+.send{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px #12a87740}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><filter id="liquid" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="0.009" numOctaves="1" seed="11" result="n"/><feGaussianBlur in="n" stdDeviation="6" result="s"/>
+  <feDisplacementMap in="SourceGraphic" in2="s" scale="55" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+
+<div class="stage">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="shell">
+    <aside class="sidebar glass">
+      <div class="brand"><span class="dot"></span> KPS</div>
+      <nav class="menu">
+        <span class="mlabel">Workspace</span>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home</a>
+        <a class="item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Chiedi (RAG)</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg> Report</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg> Notifiche</a>
+        <span class="mlabel">Gestione</span>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="9" r="2.4"/></svg> Dipendenti</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/></svg> Org chart</a>
+      </nav>
+      <div class="side-bottom">
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7 7 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L6.6 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4Z"/></svg> Impostazioni</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar"><button class="navbtn" onclick="tg()" id="tb">🌙 Tema scuro</button></div>
+
+      <div class="scroll">
+        <div class="q reveal" style="animation-delay:0s">
+          <span class="qi"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></span>
+          Chi conosce meglio il cliente Rossi S.p.A.?
+        </div>
+
+        <div class="acard reveal" style="animation-delay:.1s">
+          <span class="alabel"><svg class="sparkle" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.6 5.4L19 9l-5.4 1.6L12 16l-1.6-5.4L5 9l5.4-1.6z"/></svg> Risposta dalla memoria aziendale</span>
+          <p class="atext">In base a <b>4 interviste</b>, le persone con maggiore conoscenza del cliente <b>Rossi S.p.A.</b> sono <b>Andrea Galli</b> (Account Executive)<cite>[1]</cite> e <b>Paolo Greco</b> (Direttore Commerciale)<cite>[2]</cite>. Andrea segue il cliente dal 2022 ed è il riferimento operativo quotidiano; Paolo ha gestito il rinnovo contrattuale triennale. Esiste anche un'integrazione tecnica custom citata da un membro del team Engineering<cite>[3]</cite>.</p>
+        </div>
+
+        <div class="sectitle reveal" style="animation-delay:.2s">Persone che ne sanno di più</div>
+        <div class="people">
+          <div class="pcard reveal" style="animation-delay:.26s">
+            <div class="av" style="background:linear-gradient(135deg,#12A877,#0BA5A0)">AG</div>
+            <div class="pmain"><div class="pname">Andrea Galli</div><div class="prole">Account Executive · Sales</div>
+              <div class="psnip">"…seguo personalmente Rossi S.p.A. dal 2022, conosco il referente acquisti e lo storico delle trattative…"</div>
+              <span class="plink">Vedi intervista →</span></div>
+            <div class="pright"><div class="reln">92%</div><div class="rel"><span style="width:92%;animation-delay:.4s"></span></div></div>
+          </div>
+          <div class="pcard reveal" style="animation-delay:.34s">
+            <div class="av" style="background:linear-gradient(135deg,#0BA5A0,#4C7DF0)">PG</div>
+            <div class="pmain"><div class="pname">Paolo Greco</div><div class="prole">Direttore Commerciale · Sales</div>
+              <div class="psnip">"…ho chiuso io il rinnovo triennale con Rossi, c'è un margine di crescita sul secondo stabilimento…"</div>
+              <span class="plink">Vedi intervista →</span></div>
+            <div class="pright"><div class="reln">78%</div><div class="rel"><span style="width:78%;animation-delay:.5s"></span></div></div>
+          </div>
+          <div class="pcard reveal" style="animation-delay:.42s">
+            <div class="av" style="background:linear-gradient(135deg,#3FD68C,#12A877)">MC</div>
+            <div class="pmain"><div class="pname">Martina Conti</div><div class="prole">Backend Engineer · Engineering</div>
+              <div class="psnip">"…abbiamo sviluppato un'integrazione custom per il gestionale di Rossi, la documentazione è parziale…"</div>
+              <span class="plink">Vedi intervista →</span></div>
+            <div class="pright"><div class="reln">41%</div><div class="rel"><span style="width:41%;animation-delay:.6s"></span></div></div>
+          </div>
+        </div>
+
+        <div class="sectitle reveal" style="animation-delay:.5s">Fonti</div>
+        <div class="sources reveal" style="animation-delay:.56s">
+          <div class="src"><span class="n">1</span> <b>Intervista A. Galli</b> · 14 mag 2026</div>
+          <div class="src"><span class="n">2</span> <b>Intervista P. Greco</b> · 28 apr 2026</div>
+          <div class="src"><span class="n">3</span> <b>Intervista M. Conti</b> · 2 mag 2026</div>
+        </div>
+
+        <div class="audit reveal" style="animation-delay:.62s">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z"/></svg>
+          Ricerca registrata nell'Audit Log · scope applicato: <b>direct_reports</b> · 3 risultati
+        </div>
+      </div>
+
+      <div class="followwrap">
+        <div class="ask-halo"></div>
+        <div class="ask glass">
+          <input placeholder="Fai una domanda di approfondimento…">
+          <button class="send"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}</script>
+</body>
+</html>

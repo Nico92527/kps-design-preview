@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — 3 grafici a barre × 3 animazioni</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877; --accent-2:#0BA5A0;
+  --bg:#F7F9FB; --surface:#FFFFFF; --border:#E3E8EF;
+  --text:#0F172A; --text-soft:#475569; --text-mute:#94A3B8;
+  --shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px rgba(15,23,42,.06);
+  --grad:linear-gradient(180deg,#12A877,#0BA5A0);
+  --grad-h:linear-gradient(90deg,#0BA5A0,#12A877);
+}
+[data-theme="dark"]{--bg:#0B0F14;--surface:#121822;--border:#1E2733;--text:#E7EDF4;--text-soft:#9FB0C3;--text-mute:#5B6B7E;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5)}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
+.wrap{max-width:1240px;margin:0 auto;padding:32px 24px 80px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.eyebrow{color:var(--accent);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:28px;letter-spacing:-.03em;margin:4px 0 6px}
+.lead{color:var(--text-soft);max-width:74ch;margin:0 0 10px}
+.controls{display:flex;gap:10px}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 16px;border-radius:999px;cursor:pointer;font:inherit;font-size:13px;font-weight:600;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.solid{background:var(--grad);color:#fff;border-color:transparent}
+.btn.solid:hover{filter:brightness(1.06);color:#fff}
+
+section{margin-top:34px}
+.sec-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.tag{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;background:var(--grad);color:#fff;font-weight:700;font-size:14px}
+.sec-head h2{font-size:19px;margin:0;letter-spacing:-.02em}
+.sec-head p{margin:3px 0 0;color:var(--text-soft);font-size:13px}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.trio{grid-template-columns:1fr}}
+.mini{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center}
+.mlabel{align-self:flex-start;font-size:13px;font-weight:600;margin-bottom:10px}
+.chartbox{width:100%;display:flex;align-items:center;justify-content:center;min-height:160px}
+.btn.replay{margin-top:12px;font-size:12px;padding:6px 14px}
+.foot{margin-top:38px;color:var(--text-mute);font-size:13px;text-align:center}
+
+/* ---- VERTICALI ---- */
+.bars-v{display:flex;align-items:flex-end;gap:10px;height:150px;width:100%}
+.cell-v{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:5px}
+.bar-v{width:100%;height:var(--h);background:var(--grad);border-radius:8px 8px 3px 3px;transform-origin:bottom;box-shadow:0 6px 14px #12a87726}
+.bv-val{font-size:11px;font-weight:600;color:var(--text-soft)}
+.cell-v small{font-size:11px;color:var(--text-mute)}
+/* ---- ORIZZONTALI ---- */
+.bars-h{display:flex;flex-direction:column;gap:11px;justify-content:center;width:100%}
+.row-h{display:flex;align-items:center;gap:9px}
+.lbl-h{width:66px;text-align:right;font-size:11px;color:var(--text-mute);flex:0 0 auto}
+.track-h{flex:1;display:flex;align-items:center;gap:7px}
+.bar-h{height:16px;border-radius:8px;background:var(--grad-h);width:var(--w);transform-origin:left;box-shadow:0 4px 10px #12a87726}
+.val-h{font-size:11px;font-weight:600;color:var(--text-soft)}
+/* ---- LOLLIPOP ---- */
+.lolli{display:flex;align-items:flex-end;gap:10px;height:150px;width:100%}
+.cell-l{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:5px}
+.lval{font-size:11px;font-weight:600;color:var(--text-soft)}
+.stem{width:3px;height:var(--h);background:var(--grad);border-radius:3px;transform-origin:bottom;position:relative;margin-top:auto}
+.dot{position:absolute;top:-6px;left:50%;width:13px;height:13px;border-radius:50%;background:var(--accent);transform:translateX(-50%);box-shadow:0 0 0 4px #12a87722}
+.cell-l small{font-size:11px;color:var(--text-mute)}
+
+/* =========== ANIMAZIONI (solo con .play) =========== */
+/* A · Crescita simultanea  /  B · Cascata sequenziale (delay inline) */
+.c-vert.a-grow.play .bar-v, .c-vert.a-cascade.play .bar-v{animation:vGrow .6s cubic-bezier(.2,.8,.2,1) both}
+.c-vert.a-slide.play .bar-v{animation:vSlide .55s cubic-bezier(.2,.8,.2,1) both}
+.c-horiz.a-grow.play .bar-h, .c-horiz.a-cascade.play .bar-h{animation:hGrow .6s cubic-bezier(.2,.8,.2,1) both}
+.c-horiz.a-slide.play .bar-h{animation:hSlide .55s cubic-bezier(.2,.8,.2,1) both}
+.c-lolli.a-grow.play .stem, .c-lolli.a-cascade.play .stem{animation:vGrow .55s cubic-bezier(.2,.8,.2,1) both}
+.c-lolli.a-grow.play .dot, .c-lolli.a-cascade.play .dot{animation:dotPop .4s cubic-bezier(.34,1.56,.64,1) both}
+.c-lolli.a-slide.play .cell-l{animation:vSlide .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vGrow{from{transform:scaleY(0)}}
+@keyframes hGrow{from{transform:scaleX(0)}}
+@keyframes vSlide{from{transform:translateY(20px);opacity:0}}
+@keyframes hSlide{from{transform:translateX(-20px);opacity:0}}
+@keyframes dotPop{from{transform:translateX(-50%) scale(0);opacity:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="eyebrow">Step 4 · scegli barre + animazione</div>
+      <h1>3 grafici a barre × 3 animazioni</h1>
+    </div>
+    <div class="controls">
+      <button class="btn solid" onclick="playAll()">▶ Rigioca tutte</button>
+      <button class="btn" onclick="tg()" id="tb">🌙 Scuro</button>
+    </div>
+  </div>
+  <p class="lead">Stessi dati (insight per categoria). Tre stili di barre, e per ognuno le stesse tre animazioni: <b>A Crescita</b> (tutte insieme), <b>B Cascata</b> (una dopo l'altra), <b>C Slide</b> (entrano scivolando in dissolvenza). Il valore conta sempre. Premi Rigioca. Dimmi stile + lettera (es. "2B").</p>
+
+  <section>
+    <div class="sec-head"><span class="tag">1</span><div><h2>Barre verticali a gradiente</h2><p>Lo standard: confronto immediato delle altezze, solido e leggibile.</p></div></div>
+    <div class="trio">
+      <div class="mini c-vert a-grow"><div class="mlabel">A · Crescita</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-vert a-cascade"><div class="mlabel">B · Cascata</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-vert a-slide"><div class="mlabel">C · Slide</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="tag">2</span><div><h2>Barre orizzontali (a classifica)</h2><p>Etichette piene e leggibili, ordine di grandezza chiaro. Elegante per ranking.</p></div></div>
+    <div class="trio">
+      <div class="mini c-horiz a-grow"><div class="mlabel">A · Crescita</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-horiz a-cascade"><div class="mlabel">B · Cascata</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-horiz a-slide"><div class="mlabel">C · Slide</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><span class="tag">3</span><div><h2>Lollipop (minimal)</h2><p>Stelo sottile + pallino. Tantissima aria, look essenziale e sofisticato.</p></div></div>
+    <div class="trio">
+      <div class="mini c-lolli a-grow"><div class="mlabel">A · Crescita</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-lolli a-cascade"><div class="mlabel">B · Cascata</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+      <div class="mini c-lolli a-slide"><div class="mlabel">C · Slide</div><div class="chartbox"></div><button class="btn replay" onclick="playOne(this)">↻ Rigioca</button></div>
+    </div>
+  </section>
+
+  <div class="foot">Anteprima · 3 stili × 3 animazioni · scegli "numero + lettera" e diventa lo standard dei grafici</div>
+</div>
+
+<script>
+const DATA=[{n:'Tecnico',v:24},{n:'Operativo',v:16},{n:'Strategico',v:31},{n:'Idee',v:11},{n:'Rischi',v:7}];
+const SHORT=['Tecnico','Operat.','Strateg.','Idee','Rischi'];
+const MAX=31;
+function buildChart(style,anim){
+  if(style==='vert'){
+    return '<div class="bars-v">'+DATA.map((d,i)=>{
+      const h=(d.v/MAX*100).toFixed(0);
+      const del=anim==='cascade'?`animation-delay:${(i*0.09).toFixed(2)}s`:'';
+      return `<div class="cell-v"><span class="bv-val" data-count="${d.v}">${d.v}</span><div class="bar-v" style="--h:${h}%;${del}"></div><small>${SHORT[i]}</small></div>`;
+    }).join('')+'</div>';
+  }
+  if(style==='horiz'){
+    return '<div class="bars-h">'+DATA.map((d,i)=>{
+      const w=(d.v/MAX*100).toFixed(0);
+      const del=anim==='cascade'?`animation-delay:${(i*0.09).toFixed(2)}s`:'';
+      return `<div class="row-h"><span class="lbl-h">${d.n}</span><div class="track-h"><div class="bar-h" style="--w:${w}%;${del}"></div><span class="val-h" data-count="${d.v}">${d.v}</span></div></div>`;
+    }).join('')+'</div>';
+  }
+  return '<div class="lolli">'+DATA.map((d,i)=>{
+    const h=(d.v/MAX*100).toFixed(0);
+    const sd=anim==='cascade'?`animation-delay:${(i*0.09).toFixed(2)}s`:'';
+    const dd=anim==='cascade'?`animation-delay:${(i*0.09+0.22).toFixed(2)}s`:'animation-delay:.22s';
+    return `<div class="cell-l"><span class="lval" data-count="${d.v}">${d.v}</span><div class="stem" style="--h:${h}%;${sd}"><span class="dot" style="${dd}"></span></div><small>${SHORT[i]}</small></div>`;
+  }).join('')+'</div>';
+}
+document.querySelectorAll('.mini').forEach(m=>{
+  const style=m.classList.contains('c-vert')?'vert':m.classList.contains('c-horiz')?'horiz':'lolli';
+  const anim=m.classList.contains('a-grow')?'grow':m.classList.contains('a-cascade')?'cascade':'slide';
+  m.querySelector('.chartbox').innerHTML=buildChart(style,anim);
+});
+function countUp(el){const t=+el.dataset.count,dur=1000,t0=performance.now();function s(n){const p=Math.min(1,(n-t0)/dur);el.textContent=Math.round(t*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(s);}requestAnimationFrame(s);}
+function play(m){m.classList.remove('play');void m.offsetWidth;m.classList.add('play');m.querySelectorAll('[data-count]').forEach(e=>{e.textContent='0';countUp(e);});}
+function playOne(b){play(b.closest('.mini'));}
+function playAll(){document.querySelectorAll('.mini').forEach((m,i)=>setTimeout(()=>play(m),i*90));}
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Scuro':'☀️ Chiaro';}
+window.addEventListener('load',()=>setTimeout(playAll,250));
+</script>
+</body>
+</html>

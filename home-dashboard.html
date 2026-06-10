@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Home (dashboard)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--accent-grad:linear-gradient(135deg,#12A877,#0BA5A0);--grad:linear-gradient(135deg,#12A877,#0BA5A0);
+  --sev-critical:#E5484D;--sev-important:#E0922F;--sev-info:#4C7DF0;--sev-ok:#30A46C;
+  --text:#0B2A22;--text-soft:#3a5a52;--text-mute:#8aa79c;
+  --surface:#ffffff;--surface-2:#eef4f1;--border:#e0eae5;
+  --glass-bg:rgba(255,255,255,.5);--glass-hi:rgba(255,255,255,.95);--glass-sheen:rgba(255,255,255,.5);--glass-bd:rgba(255,255,255,.7);
+  --mesh-1:#12A87726;--shadow:0 1px 2px rgba(15,42,34,.04),0 8px 24px rgba(15,42,34,.06);--shadow-lg:0 2px 8px rgba(15,42,34,.06),0 24px 48px rgba(15,42,34,.1);
+}
+[data-theme="dark"]{--text:#EAF5F0;--text-soft:#9fc7ba;--text-mute:#5e7d72;--surface:#101a16;--surface-2:#0c1410;--border:#1c2a24;
+  --glass-bg:rgba(18,30,28,.4);--glass-hi:rgba(180,230,210,.5);--glass-sheen:rgba(200,255,235,.2);--glass-bd:rgba(150,200,180,.26);--mesh-1:#12A8773a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.5);--shadow-lg:0 2px 8px rgba(0,0,0,.5),0 24px 60px rgba(0,0,0,.6)}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;background:#fff}
+[data-theme="dark"] body{background:#05080a}
+.stage{position:fixed;inset:18px;border-radius:32px;overflow:hidden;box-shadow:0 2px 6px rgba(15,42,34,.06),0 30px 80px rgba(15,42,34,.16);border:1px solid rgba(15,42,34,.05);
+  background:radial-gradient(70% 55% at 62% 20%,#fff 0%,rgba(255,255,255,0) 60%),linear-gradient(160deg,#eefdf8,#eaf7ff 55%,#f4fffb)}
+[data-theme="dark"] .stage{background:linear-gradient(160deg,#08110e,#0a1117 55%,#0a1410);border-color:rgba(150,200,180,.1)}
+.orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.22}
+.o1{width:380px;height:380px;left:-6%;top:36%;background:radial-gradient(circle,#3FD68C,#0BA5A0)}
+.o2{width:340px;height:340px;right:-5%;top:-6%;background:radial-gradient(circle,#9DC0FF,#5E78E6)}
+
+.glass{position:relative;overflow:hidden;isolation:isolate;backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.05);-webkit-backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.05);
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,0) 44%),var(--glass-bg);
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -10px 26px rgba(0,0,0,.05),0 10px 30px rgba(15,42,34,.1),0 30px 60px rgba(15,42,34,.1)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;background:linear-gradient(135deg,var(--glass-hi),transparent 38%,transparent 62%,var(--glass-bd));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+
+.shell{position:relative;z-index:2;height:100%;display:flex;padding:16px;gap:16px}
+.sidebar{width:300px;flex:0 0 auto;border-radius:26px;padding:26px 20px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em;padding:4px 10px 0}
+.brand .dot{width:32px;height:32px;border-radius:10px;background:var(--grad);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.menu{display:flex;flex-direction:column;gap:4px;margin-top:26px}
+.mlabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);padding:12px 12px 5px}
+.item{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;color:var(--text-soft);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none}
+.item svg{opacity:.8;width:19px;height:19px}
+.item.active{background:var(--grad);color:#fff;box-shadow:0 8px 18px #12a87738}.item.active svg{opacity:1}
+.side-bottom{margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:14px;border-top:1px solid var(--glass-bd)}
+
+.main{flex:1;position:relative;display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;padding:4px 6px 16px;gap:12px;flex-wrap:wrap}
+.hello h1{font-size:25px;letter-spacing:-.03em;margin:0}
+.hello p{margin:3px 0 0;color:var(--text-soft);font-size:13.5px}
+.tcontrols{display:flex;gap:10px;align-items:center}
+.roleseg{display:inline-flex;gap:3px;padding:4px;border-radius:999px}
+.roleseg button{border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-soft);padding:6px 13px;border-radius:999px;cursor:pointer}
+.roleseg button.on{background:var(--grad);color:#fff}
+.navbtn{border:1px solid var(--border);background:var(--surface);font:inherit;font-weight:600;font-size:13px;padding:9px 15px;border-radius:999px;cursor:pointer;color:var(--text-soft)}
+
+.dash{flex:1;overflow:auto;padding:2px 6px 10px;display:flex;flex-direction:column;gap:16px}
+.reveal{animation:fadeup .5s cubic-bezier(.2,.8,.2,1) both}@keyframes fadeup{from{opacity:0;transform:translateY(12px)}}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:16px;padding:18px;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--accent) 14%,transparent),transparent 70%),var(--surface);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),var(--shadow)}
+.kpi.warn{background:linear-gradient(155deg,color-mix(in srgb,var(--sev-important) 16%,transparent),transparent 70%),var(--surface)}
+.kpi .kl{color:var(--text-soft);font-size:13px;font-weight:500}
+.kpi .kv{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:6px 0 2px}
+.kpi .kd{font-size:12.5px;font-weight:600;color:var(--sev-ok)}.kpi.warn .kv,.kpi.warn .kd{color:var(--sev-important)}
+
+.row{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+@media(max-width:980px){.row{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow)}
+.ctitle{font-size:14px;font-weight:700;letter-spacing:-.01em;margin:0 0 16px;display:flex;align-items:center;justify-content:space-between}
+.ctitle a{font-size:12px;font-weight:600;color:var(--accent);text-decoration:none}
+
+/* bars */
+.bars-v{display:flex;align-items:flex-end;gap:14px;height:180px}
+.cell-v{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:6px}
+.bar-v{width:100%;height:var(--h);background:var(--accent-grad);border-radius:8px 8px 3px 3px;transform-origin:bottom;box-shadow:0 8px 18px var(--mesh-1);animation:vGrow .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vGrow{from{transform:scaleY(0)}}
+.bv{font-size:11px;font-weight:600;color:var(--text-soft)}.cell-v small{font-size:11px;color:var(--text-mute)}
+
+/* donut */
+.donut{display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:center}
+.seg{fill:none;stroke-width:22;transform:rotate(-90deg);transform-origin:90px 90px;animation:dgrow .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dgrow{from{stroke-dasharray:0 999}}
+.cn{font-size:28px;font-weight:800;fill:var(--text);text-anchor:middle}.cl{font-size:10px;fill:var(--text-mute);text-anchor:middle}
+.dleg{display:flex;flex-direction:column;gap:7px;font-size:12.5px}.dleg div{display:flex;align-items:center;gap:8px;color:var(--text-soft)}.dleg i{width:10px;height:10px;border-radius:3px}
+
+/* alerts + activity */
+.alist{display:flex;flex-direction:column;gap:10px}
+.alert{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:13px;background:var(--surface-2)}
+.adot{flex:0 0 auto;width:9px;height:9px;border-radius:50%;margin-top:5px}
+.atxt{flex:1;font-size:13.5px;line-height:1.4}.atime{font-size:11.5px;color:var(--text-mute);margin-top:2px}
+.act{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--border);font-size:13.5px}
+.act:last-child{border-bottom:0}.act .ai{width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.act .at{flex:1}.act .au{font-size:11.5px;color:var(--text-mute)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><filter id="liquid" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency="0.009" numOctaves="1" seed="11" result="n"/><feGaussianBlur in="n" stdDeviation="6" result="s"/><feDisplacementMap in="SourceGraphic" in2="s" scale="55" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+
+<div class="stage">
+  <div class="orb o1"></div><div class="orb o2"></div>
+  <div class="shell">
+    <aside class="sidebar glass">
+      <div class="brand"><span class="dot"></span> KPS</div>
+      <nav class="menu">
+        <span class="mlabel">Workspace</span>
+        <a class="item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg> Home</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Chiedi (RAG)</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg> Report</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/></svg> Notifiche</a>
+        <span class="mlabel">Gestione</span>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="9" r="2.4"/></svg> Dipendenti</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/></svg> Org chart</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z"/></svg> Ruoli & permessi</a>
+      </nav>
+      <div class="side-bottom">
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7 7 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L6.6 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4Z"/></svg> Impostazioni</a>
+        <a class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="hello"><h1>Bentornato, Nicholas 👋</h1><p>Ecco la situazione della memoria aziendale · martedì 10 giugno</p></div>
+        <div class="tcontrols">
+          <span class="roleseg glass"><button class="on">Admin</button><button>Manager</button><button>Dipendente</button></span>
+          <button class="navbtn" onclick="tg()" id="tb">🌙 Tema scuro</button>
+        </div>
+      </div>
+
+      <div class="dash">
+        <div class="kpis">
+          <div class="kpi reveal" style="animation-delay:0s"><div class="kl">Interviste completate</div><div class="kv" data-count="142">0</div><div class="kd">↗ +12% sul mese</div></div>
+          <div class="kpi reveal" style="animation-delay:.06s"><div class="kl">Insight approvati</div><div class="kv" data-count="38">0</div><div class="kd">↗ +5 questa settimana</div></div>
+          <div class="kpi warn reveal" style="animation-delay:.12s"><div class="kl">Rischi segnalati</div><div class="kv" data-count="7">0</div><div class="kd">3 reparti coinvolti</div></div>
+          <div class="kpi reveal" style="animation-delay:.18s"><div class="kl">Tasso completamento</div><div class="kv"><span data-count="86">0</span>%</div><div class="kd">↗ +4% sul mese</div></div>
+        </div>
+
+        <div class="row">
+          <div class="card reveal" style="animation-delay:.24s">
+            <div class="ctitle">Insight per categoria <a href="#">Report →</a></div>
+            <div class="bars-v">
+              <div class="cell-v"><span class="bv" data-count="24">0</span><div class="bar-v" style="--h:77%;animation-delay:.3s"></div><small>Tecnico</small></div>
+              <div class="cell-v"><span class="bv" data-count="16">0</span><div class="bar-v" style="--h:51%;animation-delay:.38s"></div><small>Operativo</small></div>
+              <div class="cell-v"><span class="bv" data-count="31">0</span><div class="bar-v" style="--h:100%;animation-delay:.46s"></div><small>Strategico</small></div>
+              <div class="cell-v"><span class="bv" data-count="11">0</span><div class="bar-v" style="--h:35%;animation-delay:.54s"></div><small>Idee</small></div>
+              <div class="cell-v"><span class="bv" data-count="7">0</span><div class="bar-v" style="--h:22%;animation-delay:.62s"></div><small>Rischi</small></div>
+            </div>
+          </div>
+          <div class="card reveal" style="animation-delay:.3s">
+            <div class="ctitle">Composizione conoscenza</div>
+            <div class="donut">
+              <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle r="68" cx="90" cy="90" fill="none" stroke="var(--border)" stroke-width="22"/>
+                <circle class="seg" r="68" cx="90" cy="90" stroke="#12A877" stroke-dasharray="115.2 427.3" stroke-dashoffset="0" style="animation-delay:.4s"/>
+                <circle class="seg" r="68" cx="90" cy="90" stroke="#0BA5A0" stroke-dasharray="76.8 427.3" stroke-dashoffset="-115.2" style="animation-delay:.55s"/>
+                <circle class="seg" r="68" cx="90" cy="90" stroke="#3FD68C" stroke-dasharray="148.8 427.3" stroke-dashoffset="-192" style="animation-delay:.7s"/>
+                <circle class="seg" r="68" cx="90" cy="90" stroke="#4C7DF0" stroke-dasharray="52.8 427.3" stroke-dashoffset="-340.8" style="animation-delay:.85s"/>
+                <circle class="seg" r="68" cx="90" cy="90" stroke="#E0922F" stroke-dasharray="33.6 427.3" stroke-dashoffset="-393.6" style="animation-delay:1s"/>
+                <text class="cn" x="90" y="92">89</text><text class="cl" x="90" y="107">insight</text>
+              </svg>
+              <div class="dleg">
+                <div><i style="background:#12A877"></i> Tecnico · 24</div><div><i style="background:#0BA5A0"></i> Operativo · 16</div>
+                <div><i style="background:#3FD68C"></i> Strategico · 31</div><div><i style="background:#4C7DF0"></i> Idee · 11</div><div><i style="background:#E0922F"></i> Rischi · 7</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card reveal" style="animation-delay:.36s">
+            <div class="ctitle">Richiede attenzione <a href="#">Tutte →</a></div>
+            <div class="alist">
+              <div class="alert"><span class="adot" style="background:var(--sev-critical)"></span><div class="atxt">Concentrazione critica di conoscenza in <b>Logistica</b> — un solo dipendente la detiene.<div class="atime">2 ore fa · critico</div></div></div>
+              <div class="alert"><span class="adot" style="background:var(--sev-important)"></span><div class="atxt"><b>3 interviste</b> in scadenza questa settimana nel reparto Sales.<div class="atime">5 ore fa · importante</div></div></div>
+              <div class="alert"><span class="adot" style="background:var(--sev-info)"></span><div class="atxt">Nuovo insight strategico approvato dal dual-agent — <b>Sales</b>.<div class="atime">ieri · informativo</div></div></div>
+            </div>
+          </div>
+          <div class="card reveal" style="animation-delay:.42s">
+            <div class="ctitle">Attività recente</div>
+            <div class="act"><span class="ai">✅</span><div class="at">Intervista completata · <b>M. Conti</b><div class="au">quality score 82/100</div></div></div>
+            <div class="act"><span class="ai">📄</span><div class="at">Report <b>Risk assessment</b> generato<div class="au">3 reparti · oggi 09:14</div></div></div>
+            <div class="act"><span class="ai">👤</span><div class="at">Nuovo dipendente attivato · <b>L. Romano</b><div class="au">Engineering · ieri</div></div></div>
+            <div class="act"><span class="ai">🔎</span><div class="at">12 ricerche RAG questa settimana<div class="au">tutte loggate in Audit</div></div></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+function countUp(el){const t=+el.dataset.count,dur=1100,t0=performance.now();function s(n){const p=Math.min(1,(n-t0)/dur);el.textContent=Math.round(t*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(s);}requestAnimationFrame(s);}
+document.querySelectorAll('[data-count]').forEach(countUp);
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Design Preview · Galleria</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--grad:linear-gradient(135deg,#12A877,#0BA5A0);
+  --text:#0B2A22;--text-soft:#3a5a52;--text-mute:#8aa79c;
+  --surface:#ffffff;--surface-2:#eef4f1;--border:#e0eae5;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(60% 40% at 50% 0%,#fff 0%,rgba(255,255,255,0) 60%),linear-gradient(160deg,#eefdf8,#eaf7ff 55%,#f4fffb);min-height:100vh}
+.wrap{max-width:1280px;margin:0 auto;padding:48px 32px 80px}
+header{display:flex;align-items:center;gap:16px;margin-bottom:8px}
+.logo{width:42px;height:42px;border-radius:13px;background:var(--grad);box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 14%,transparent)}
+h1{margin:0;font-size:26px;letter-spacing:-.02em}
+h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:6px 0 0;color:var(--text-soft);font-size:14.5px}
+h2{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);margin:44px 0 18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px}
+.card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(15,42,34,.05),0 12px 32px rgba(15,42,34,.07);transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.card:hover{transform:translateY(-4px);box-shadow:0 2px 5px rgba(15,42,34,.06),0 24px 50px rgba(15,42,34,.13)}
+.shot{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--surface-2);border-bottom:1px solid var(--border)}
+.shot iframe{width:400%;height:400%;transform:scale(.25);transform-origin:0 0;border:0;pointer-events:none;display:block}
+.meta{display:flex;align-items:center;gap:12px;padding:15px 18px}
+.meta .t{font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+.meta .d{font-size:12.5px;color:var(--text-mute);margin-top:2px}
+.meta .arrow{margin-left:auto;width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--text-soft);flex:0 0 auto;transition:.2s}
+.card:hover .arrow{background:var(--grad);color:#fff}
+.badge{position:absolute;top:12px;left:12px;z-index:2;font-size:11px;font-weight:700;letter-spacing:.04em;padding:5px 10px;border-radius:999px;color:#fff;background:var(--grad);box-shadow:0 4px 12px #12a87750}
+footer{margin-top:56px;font-size:12.5px;color:var(--text-mute);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"></div>
+    <div>
+      <h1>Knowledge Preservation System — <span>Design Preview</span></h1>
+      <p class="sub">Tutti i mockup approvati finora. Clicca una card per aprire la pagina a schermo intero (le anteprime sono live, in miniatura).</p>
+    </div>
+  </header>
+
+  <h2>Schermate dell'app</h2>
+  <div class="grid">
+    <a class="card" href="hero-welcome.html" target="_blank">
+      <div class="shot"><iframe src="hero-welcome.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Benvenuto</div><div class="d">Hero di accesso all'intervista</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="interview.html" target="_blank">
+      <div class="shot"><span class="badge">AGGIORNATA · onda Lottie</span><iframe src="interview.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Intervista con Aria</div><div class="d">Chat + voce · premi il microfono per vedere la nuova onda</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="home-employee.html" target="_blank">
+      <div class="shot"><iframe src="home-employee.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Home dipendente</div><div class="d">Prossima intervista, riprendi in pausa, second brain</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="home-dashboard.html" target="_blank">
+      <div class="shot"><iframe src="home-dashboard.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Dashboard admin / manager</div><div class="d">KPI, grafici e alert</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="rag-answer.html" target="_blank">
+      <div class="shot"><iframe src="rag-answer.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Second brain</div><div class="d">Risposta RAG sulla memoria aziendale</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="team-selection.html" target="_blank">
+      <div class="shot"><iframe src="team-selection.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Selezione team</div><div class="d">Scelta del team / perimetro</div></div><div class="arrow">→</div></div>
+    </a>
+  </div>
+
+  <h2>Linguaggio visivo &amp; esplorazioni</h2>
+  <div class="grid">
+    <a class="card" href="styleguide.html" target="_blank">
+      <div class="shot"><iframe src="styleguide.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Styleguide</div><div class="d">Palette, tipografia, componenti, liquid glass</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="charts-proposals.html" target="_blank">
+      <div class="shot"><iframe src="charts-proposals.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Grafici — proposte</div><div class="d">Stili a confronto</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="charts-animations.html" target="_blank">
+      <div class="shot"><iframe src="charts-animations.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Grafici — animazioni</div><div class="d">Cascata e sweep sequenziale</div></div><div class="arrow">→</div></div>
+    </a>
+    <a class="card" href="bars-proposals.html" target="_blank">
+      <div class="shot"><iframe src="bars-proposals.html" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="meta"><div><div class="t">Barre — proposte</div><div class="d">Varianti barre verticali a gradiente</div></div><div class="arrow">→</div></div>
+    </a>
+  </div>
+
+  <footer>Branch <b>design/ui-previews</b> · mockup HTML statici · il frontend React verrà costruito su questo riferimento visivo</footer>
+</div>
+</body>
+</html>

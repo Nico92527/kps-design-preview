@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KPS — Scocca app (sidebar per ruolo + typewriter)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#12A877;--accent-2:#0BA5A0;--accent-glow:#3FD68C;
+  --grad:linear-gradient(135deg,#12A877,#0BA5A0);
+  --text:#0B2A22;--text-soft:#3a5a52;--text-mute:#8aa79c;
+  --glass-bg:rgba(255,255,255,.46);--glass-hi:rgba(255,255,255,.95);--glass-sheen:rgba(255,255,255,.55);--glass-bd:rgba(255,255,255,.7);
+}
+[data-theme="dark"]{
+  --text:#EAF5F0;--text-soft:#9fc7ba;--text-mute:#5e7d72;
+  --glass-bg:rgba(18,30,28,.36);--glass-hi:rgba(180,230,210,.5);--glass-sheen:rgba(200,255,235,.22);--glass-bd:rgba(150,200,180,.26);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;overflow:hidden;background:#ffffff}
+[data-theme="dark"] body{background:#05080a}
+
+.stage{position:fixed;inset:18px;border-radius:32px;overflow:hidden;
+  box-shadow:0 2px 6px rgba(15,42,34,.06),0 30px 80px rgba(15,42,34,.16);border:1px solid rgba(15,42,34,.05);
+  background:
+    radial-gradient(70% 60% at 56% 44%, #ffffff 0%, rgba(255,255,255,0) 62%),
+    linear-gradient(160deg,#eefdf8 0%,#eaf7ff 50%,#f4fffb 100%);}
+[data-theme="dark"] .stage{border-color:rgba(150,200,180,.10);box-shadow:0 2px 6px rgba(0,0,0,.4),0 30px 80px rgba(0,0,0,.6);
+  background:radial-gradient(70% 60% at 56% 44%, rgba(20,40,36,.5) 0%, rgba(11,15,20,0) 62%),linear-gradient(160deg,#08110e,#0a1117 50%,#0a1410)}
+
+/* sfondo calmo */
+.orb{position:absolute;border-radius:50%;filter:blur(72px);will-change:transform}
+.o1{width:480px;height:480px;left:-9%;top:24%;opacity:.5;background:radial-gradient(circle at 40% 40%,#3FD68C,#0BA5A0);animation:dA 28s ease-in-out infinite}
+.o2{width:440px;height:440px;right:-6%;top:-4%;opacity:.32;background:radial-gradient(circle at 40% 40%,#9DC0FF,#5E78E6);animation:dB 34s ease-in-out infinite}
+.o3{width:460px;height:460px;left:42%;bottom:-16%;opacity:.34;background:radial-gradient(circle at 40% 40%,#9BE9C6,#12A877);animation:dC 30s ease-in-out infinite}
+@keyframes dA{0%{transform:translate(0,0) scale(1)}50%{transform:translate(70px,40px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}
+@keyframes dB{0%{transform:translate(0,0) scale(1)}50%{transform:translate(-60px,50px) scale(1.06)}100%{transform:translate(0,0) scale(1)}}
+@keyframes dC{0%{transform:translate(0,0) scale(1)}50%{transform:translate(50px,-50px) scale(1.1)}100%{transform:translate(0,0) scale(1)}}
+
+/* liquid glass */
+.glass{position:relative;overflow:hidden;isolation:isolate;
+  backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.06);
+  -webkit-backdrop-filter:url(#liquid) blur(2px) saturate(190%) brightness(1.06);
+  background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,0) 44%),var(--glass-bg);
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -10px 26px rgba(0,0,0,.05),0 10px 30px rgba(15,42,34,.10),0 30px 60px rgba(15,42,34,.10)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(135deg,var(--glass-hi),transparent 38%,transparent 62%,var(--glass-bd));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.glass::after{content:"";position:absolute;top:-120%;left:-40%;width:55%;height:340%;
+  background:linear-gradient(105deg,transparent,var(--glass-sheen),transparent);transform:rotate(18deg);filter:blur(6px);
+  pointer-events:none;animation:sheen 11s ease-in-out infinite}
+@keyframes sheen{0%,100%{left:-55%;opacity:0}45%{opacity:.75}60%{left:130%;opacity:.2}}
+
+.shell{position:relative;z-index:2;height:100%;display:flex;padding:16px;gap:16px}
+
+/* sidebar */
+.sidebar{width:300px;flex:0 0 auto;border-radius:26px;padding:26px 20px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:19px;letter-spacing:-.02em;padding:4px 10px 0}
+.brand .dot{width:32px;height:32px;border-radius:10px;background:var(--grad);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.menu{display:flex;flex-direction:column;gap:4px;margin-top:26px;overflow:auto}
+.mlabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);padding:12px 12px 5px}
+.item{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;color:var(--text-soft);font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;transition:.15s}
+.item svg{flex:0 0 auto;opacity:.8;width:19px;height:19px}
+.item:hover{background:rgba(255,255,255,.45);color:var(--text)}
+[data-theme="dark"] .item:hover{background:rgba(255,255,255,.07)}
+.item.active{background:var(--grad);color:#fff;box-shadow:0 8px 18px #12a87738}
+.item.active svg{opacity:1}
+.side-bottom{margin-top:auto;display:flex;flex-direction:column;gap:3px;padding-top:14px;border-top:1px solid var(--glass-bd)}
+
+/* main */
+.main{flex:1;position:relative;display:flex;flex-direction:column}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:2px 4px}
+.roleswitch{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-soft);font-weight:600}
+.roleswitch .seg{display:inline-flex;gap:3px;padding:4px;border-radius:999px}
+.roleswitch .seg button{border:0;background:transparent;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-soft);padding:6px 13px;border-radius:999px;cursor:pointer}
+.roleswitch .seg button.on{background:var(--grad);color:#fff}
+.navbtn{border:0;font:inherit;font-weight:600;font-size:13px;padding:9px 15px;border-radius:999px;cursor:pointer;color:var(--text)}
+
+.hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;margin-top:-30px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:24px}
+.badge .d{width:9px;height:9px;border-radius:50%;background:var(--accent);transform-origin:center;animation:heartbeat 3s ease-in-out infinite}
+@keyframes heartbeat{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 28%,transparent)}
+  50%{transform:scale(1.2);box-shadow:0 0 8px 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+}
+h1{font-size:clamp(30px,4.6vw,54px);line-height:1.06;letter-spacing:-.04em;font-weight:800;margin:0 0 16px;min-height:2.2em}
+h1 .g{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.caret{display:inline-block;width:2px;height:.9em;background:var(--accent);margin-left:4px;vertical-align:-2px;border-radius:2px;opacity:.85;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.85}50%{opacity:0}}
+.sub{font-size:clamp(14px,1.4vw,17px);color:var(--text-soft);max-width:52ch;margin:0 0 28px}
+.toggle{display:inline-flex;gap:4px;padding:5px;border-radius:999px;margin-bottom:18px}
+.toggle button{border:0;background:transparent;font:inherit;font-weight:600;font-size:14px;color:var(--text-soft);padding:8px 18px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:7px}
+.toggle button.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px #12a87733}
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes spin{to{--ang:360deg}}
+.ask-wrap{position:relative;width:min(1080px,95%)}
+/* bordo colorato che ruota lentamente (sopra il perimetro) */
+.ask-wrap::before{content:"";position:absolute;inset:0;border-radius:999px;padding:2.5px;z-index:2;pointer-events:none;
+  filter:blur(2px) brightness(1.3) drop-shadow(0 0 7px rgba(63,214,140,.75)) drop-shadow(0 0 16px rgba(11,165,160,.55));
+  background:conic-gradient(from var(--ang), transparent 0 30%, #4FE29B 50%, #14C2B8 76%, transparent 98%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:spin 9s linear infinite}
+/* vetro pulito (niente displacement = niente sbavatura "scarabocchio") */
+.ask{position:relative;z-index:1;display:flex;align-items:center;gap:12px;width:100%;padding:13px 13px 13px 28px;border-radius:999px;
+  backdrop-filter:blur(16px) saturate(180%);-webkit-backdrop-filter:blur(16px) saturate(180%)}
+.ask input{flex:1;min-width:0;border:0;background:transparent;outline:none;font:inherit;font-size:16.5px;color:var(--text);text-overflow:ellipsis}
+.ask input::placeholder{color:color-mix(in srgb,var(--text-soft) 75%,transparent)}
+.send{flex:0 0 auto;width:50px;height:50px;border-radius:50%;border:0;cursor:pointer;background:var(--grad);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px #12a87740;transition:.2s}
+.send:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.hint{margin-top:18px;font-size:13px;color:var(--text-soft)}
+.hint b{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="liquid" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.009" numOctaves="1" seed="11" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="6" result="s"/>
+    <feDisplacementMap in="SourceGraphic" in2="s" scale="55" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="stage">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+  <div class="shell">
+    <aside class="sidebar glass">
+      <div class="brand"><span class="dot"></span> KPS</div>
+      <nav class="menu" id="menu"></nav>
+      <div class="side-bottom" id="sidebottom"></div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="roleswitch">Vista:
+          <span class="seg glass">
+            <button data-role="admin" class="on">Admin</button>
+            <button data-role="manager">Manager</button>
+            <button data-role="employee">Dipendente</button>
+          </span>
+        </div>
+        <button class="navbtn glass" onclick="tg()" id="tb">🌙 Tema scuro</button>
+      </div>
+
+      <div class="hero">
+        <span class="badge glass"><span class="d"></span> Memoria aziendale viva</span>
+        <h1 id="title"></h1>
+        <p class="sub">Chiedi qualsiasi cosa alla memoria delle interviste: chi sa di un argomento, cosa è successo in un reparto, dove si concentrano i rischi.</p>
+        <div class="toggle glass">
+          <button class="on">🔎 Chiedi</button>
+          <button>🧭 Esplora</button>
+        </div>
+        <div class="ask-wrap">
+          <div class="ask-halo"></div>
+          <div class="ask glass">
+            <input placeholder="Chi conosce meglio il cliente Rossi S.p.A.?">
+            <button class="send" aria-label="Cerca">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="hint">Prova: <b>"Quali rischi sono emersi in Logistica?"</b></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+function ic(p){return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
+const ICONS={
+  home:ic('<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>'),
+  search:ic('<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>'),
+  chart:ic('<path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/>'),
+  bell:ic('<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/>'),
+  users:ic('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="18" cy="9" r="2.4"/>'),
+  org:ic('<rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/>'),
+  shield:ic('<path d="M12 3 5 6v5c0 4 3 7 7 9 4-2 7-5 7-9V6Z"/>'),
+  gear:ic('<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7 7 0 0 0 0-2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L15 3h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L6.6 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4Z"/>'),
+  logout:ic('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>'),
+  history:ic('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 4v4h4"/><path d="M12 8v4l3 2"/>'),
+  cal:ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/>'),
+  profile:ic('<circle cx="12" cy="8" r="3.4"/><path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6"/>')
+};
+const MENUS={
+  admin:{groups:[
+      {t:'Workspace',items:[['Home','home'],['Chiedi (RAG)','search'],['Report','chart'],['Notifiche','bell']]},
+      {t:'Gestione',items:[['Dipendenti','users'],['Org chart','org'],['Ruoli & permessi','shield']]}],
+    bottom:[['Impostazioni','gear'],['Logout','logout']]},
+  manager:{groups:[
+      {t:'Workspace',items:[['Home','home'],['Chiedi (RAG)','search'],['Report del team','chart'],['Il mio team','users'],['Org chart','org'],['Notifiche','bell']]}],
+    bottom:[['Impostazioni','gear'],['Logout','logout']]},
+  employee:{groups:[
+      {t:'Area personale',items:[['Home','home'],['Le mie interviste','history'],['Calendario','cal'],['Il mio profilo','profile'],['Notifiche','bell']]}],
+    bottom:[['Logout','logout']]}
+};
+function row(l,i){return `<a class="item" data-l="${l}">${ICONS[i]} ${l}</a>`;}
+function renderMenu(role){
+  const m=MENUS[role];
+  document.getElementById('menu').innerHTML=m.groups.map(g=>`<span class="mlabel">${g.t}</span>`+g.items.map(it=>row(it[0],it[1])).join('')).join('');
+  document.getElementById('sidebottom').innerHTML=m.bottom.map(it=>row(it[0],it[1])).join('');
+  const first=document.querySelector('#menu .item'); if(first) first.classList.add('active');
+  document.querySelectorAll('.item').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();document.querySelectorAll('.item').forEach(x=>x.classList.remove('active'));a.classList.add('active');}));
+}
+document.querySelectorAll('.roleswitch button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.roleswitch button').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderMenu(b.dataset.role);}));
+renderMenu('admin');
+
+/* typewriter elegante — solo sul titolo */
+const L1="La conoscenza della tua azienda,", L2="sempre a portata di domanda.";
+(function typer(){
+  const h=document.getElementById('title');let i=0,j=0;const sp=82;
+  function tick(){
+    let html=L1.slice(0,i);
+    if(i>=L1.length) html+='<br><span class="g">'+L2.slice(0,j)+'</span>';
+    html+='<span class="caret"></span>';
+    h.innerHTML=html;
+    if(i<L1.length){const pause=L1[i-1]===','?360:sp;i++;setTimeout(tick,pause);}     // respiro alla virgola
+    else if(j<L2.length){const first=j===0;j++;setTimeout(tick,first?480:sp);}          // respiro tra le righe
+  }
+  setTimeout(tick,450);
+})();
+
+function tg(){const r=document.documentElement;const d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark');document.getElementById('tb').textContent=d?'🌙 Tema scuro':'☀️ Tema chiaro';}
+</script>
+</body>
+</html>
